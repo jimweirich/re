@@ -1,3 +1,5 @@
+#!/usr/bin/ruby -wKU
+#
 # = Regular Expression Construction.
 #
 # Construct regular expressions using the re() method.
