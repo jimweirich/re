@@ -77,12 +77,18 @@
 #
 # See Re.re, Re::Rexp, and Re::ConstructionMethods for details.
 #
+# == License and Copyright:
+#
+# Copyright 2009 by Jim Weirich (jim.weirich@gmail.com)
+#
+# Re is provided under the MIT open source license (see MIT-LICENSE)
 #
 # == Links:
 #
 # * Documentation :: http://re-lib.rubyforge.org
 # * Source        :: http://github.com/jimweirich/re
 # * Bug Tracker   :: http://www.pivotaltracker.com/projects/47758
+# * Author        :: jim.weirich@gmail.com
 #
 module Re
   
