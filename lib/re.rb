@@ -342,106 +342,152 @@ module Re
   end
   extend self
   
+  # This module defines a number of methods returning common
+  # pre-packaged regular expressions along with methods to create
+  # regular expressions from character classes and other objects.
+  # ConstructionMethods is mixed into the NULL Rexp object so that
+  # re() without arguments can be used to access the methods.
+  module ConstructionMethods
+    
+    # :call-seq:
+    #   re.null
+    #
+    # Matches the null string
+    def null
+      self
+    end
+    
+    # :call-seq:
+    #   re.any
+    #   re.any(chars)
+    #   re.any(range)
+    #   re.any(chars, range, ...)
+    #
+    # Match a character from the character class.
+    #
+    # Any without any arguments will match any single character.  Any
+    # with one or more arguments will construct a character class for
+    # the arguments.  If the argument is a three character string where
+    # the middle character is "-", then the argument represents a range
+    # of characters.  Otherwise the arguments are treated as a list of
+    # characters to be added to the character class.
+    #
+    # Examples:
+    #
+    #   re.any                            -- match any character
+    #   re.any("aieouy")                  -- match vowels
+    #   re.any("0-9")                     -- match digits
+    #   re.any("A-Z", "a-z", "0-9")       -- match alphanumerics
+    #   re.any("A-Z", "a-z", "0-9", "_")  -- match alphanumerics
+    #
+    def any(*chars)
+      if chars.empty?
+        @dot ||= Rexp.raw(".")
+      else
+        any_chars = ''
+        chars.each do |chs|
+          if /^.-.$/ =~ chs
+            any_chars << chs
+          else
+            any_chars << Rexp.escape_any(chs)
+          end
+        end
+        Rexp.new("[" + any_chars  + "]", GROUPED, 0, [])
+      end
+    end
+    
+    # :call-seq:
+    #   re.space
+    #
+    # Matches any white space
+    def space
+      @space ||= Rexp.raw("\\s")
+    end
+    
+    # :call-seq:
+    #   re.spaces
+    #
+    # Matches any white space
+    def spaces
+      @spaces ||= space.one_or_more
+    end
+    
+    # :call-seq:
+    #   re.nonspace
+    #
+    # Matches any non-white space
+    def nonspace
+      @nonspace ||= Rexp.raw("\\S")
+    end
+    
+    # :call-seq:
+    #   re.nonspaces
+    #
+    # Matches any non-white space
+    def nonspaces
+      @nonspaces ||= Rexp.raw("\\S").one_or_more
+    end
+    
+    # :call-seq:
+    #   re.word_char
+    #
+    # Matches any sequence of word characters
+    def word_char
+      @word_char ||= Rexp.raw("\\w")
+    end
+    
+    # :call-seq:
+    #   re.word
+    #
+    # Matches any sequence of word characters
+    def word
+      @word ||= word_char.one_or_more
+    end
+    
+    # :call-seq:
+    #   re.break
+    #
+    # Zero-length matches any break
+    def break
+      @break ||= Rexp.raw("\\b")
+    end
+    
+    # :call-seq:
+    #   re.digit
+    #
+    # Matches a digit
+    def digit
+      @digit ||= any("0-9")
+    end
+    
+    # :call-seq:
+    #   re.digits
+    #
+    # Matches a sequence of digits
+    def digits
+      @digits ||= digit.one_or_more
+    end
+    
+    # :call-seq:
+    #   re.hex_digit
+    #
+    # Matches a hex digit (upper or lower case)
+    def hex_digit
+      @hex_digit ||= any("0-9", "a-f", "A-F")
+    end
+    
+    # :call-seq:
+    #   re.hex_digits
+    #
+    # Matches a sequence of hex digits
+    def hex_digits
+      @hex_digits ||= hex_digit.one_or_more
+    end
+  end
+
   # Matches an empty string.  Additional common regular expression
   # constants are defined as methods on the NULL Rexp.  See Re::NULL.
   NULL = Rexp.literal("")
+  NULL.extend(ConstructionMethods)
 
-  # Matches the null string
-  def NULL.null
-    self
-  end
-
-  # :call-seq:
-  #   re.any
-  #   re.any(chars)
-  #   re.any(range)
-  #   re.any(chars, range, ...)
-  #
-  # Match a character from the character class.
-  #
-  # Any without any arguments will match any single character.  Any
-  # with one or more arguments will construct a character class for
-  # the arguments.  If the argument is a three character string where
-  # the middle character is "-", then the argument represents a range
-  # of characters.  Otherwise the arguments are treated as a list of
-  # characters to be added to the character class.
-  #
-  # Examples:
-  #
-  #   re.any                            -- match any character
-  #   re.any("aieouy")                  -- match vowels
-  #   re.any("0-9")                     -- match digits
-  #   re.any("A-Z", "a-z", "0-9")       -- match alphanumerics
-  #   re.any("A-Z", "a-z", "0-9", "_")  -- match alphanumerics
-  #
-  def NULL.any(*chars)
-    if chars.empty?
-      @dot ||= Rexp.raw(".")
-    else
-      any_chars = ''
-      chars.each do |chs|
-        if /^.-.$/ =~ chs
-          any_chars << chs
-        else
-          any_chars << Rexp.escape_any(chs)
-        end
-      end
-      Rexp.new("[" + any_chars  + "]", GROUPED, 0, [])
-    end
-  end
-  
-  # Matches any white space
-  def NULL.space
-    @space ||= Rexp.raw("\\s")
-  end
-
-    # Matches any white space
-  def NULL.spaces
-    @spaces ||= space.one_or_more
-  end
-
-  # Matches any non-white space
-  def NULL.nonspace
-    @nonspace ||= Rexp.raw("\\S")
-  end
-  
-  # Matches any non-white space
-  def NULL.nonspaces
-    @nonspaces ||= Rexp.raw("\\S").one_or_more
-  end
-  
-  # Matches any sequence of word characters
-  def NULL.word_char
-    @word_char ||= Rexp.raw("\\w")
-  end
-  
-  # Matches any sequence of word characters
-  def NULL.word
-    @word ||= word_char.one_or_more
-  end
-  
-  # Zero-length matches any break
-  def NULL.break
-    @break ||= Rexp.raw("\\b")
-  end
-  
-  # Matches a digit
-  def NULL.digit
-    @digit ||= any("0-9")
-  end
-  
-  # Matches a sequence of digits
-  def NULL.digits
-    @digits ||= digit.one_or_more
-  end
-  
-  # Matches a hex digit (upper or lower case)
-  def NULL.hex_digit
-    @hex_digit ||= any("0-9", "a-f", "A-F")
-  end
-  
-  # Matches a sequence of hex digits
-  def NULL.hex_digits
-    @hex_digits ||= hex_digit.one_or_more
-  end
 end
