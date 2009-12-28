@@ -42,7 +42,11 @@
 module Re
 
 module Version
-  NUMBERS = [ MAJOR = 0, MINOR = 0, BUILD = 1 ]
+  NUMBERS = [
+    MAJOR = 0,
+    MINOR = 0,
+    BUILD = 2
+  ]
 end
 VERSION = Version::NUMBERS.join('.')
 
