@@ -2,9 +2,39 @@
 #
 # = Regular Expression Construction.
 #
-# Construct regular expressions using the re() method.
+# Complex regular expressions are hard to construct and even harder to
+# read.  The Re library allows users to construct complex regular
+# expressions from simplier expressions.  For example, consider the
+# following regular expression that will parse dates:
 #
-# Usage:
+#    /\A((?:19|20)[0-9]{2})[\- \/.](0[1-9]|1[012])[\- \/.](0[1-9]|[12][0-9]|3[01])\z/
+#
+# That regular expression can be built incrementaly from smaller,
+# easier to understand expressions.  Perhaps something like this:
+#
+#       delim                = re.any("- /.")
+#       century_prefix       = re("19") | re("20")
+#       under_ten            = re("0") + re.any("1-9")
+#       ten_to_twelve        = re("1") + re.any("012")
+#       ten_and_under_thirty = re.any("12") + re.any("0-9")
+#       thirties             = re("3") + re.any("01")
+#          
+#       year = (century_prefix + re.digit.repeat(2)).capture(:year)
+#       month = (under_ten | ten_to_twelve).capture(:month)
+#       day = (under_ten | ten_and_under_thirty | thirties).capture(:day)
+#          
+#       date = (year + delim + month + delim + day).all
+#
+# Although it is more code, the individual pieces are smaller and
+# easier to independently verify.  As an additional bonus, the capture
+# groups can be retrieved by name:
+#
+#       result = date.match("2009-01-23")
+#       result.data(:year)   # => "2009"
+#       result.data(:month)  # => "01"
+#       result.data(:day)    # => "23"
+#
+# == Usage:
 #
 #   include Re
 #
@@ -15,7 +45,7 @@
 #     puts "No Match"
 #   end
 #
-# Examples:
+# == Examples:
 #
 #   re("a")                -- matches "a"
 #   re("a") + re("b")      -- matches "ab"
@@ -30,9 +60,17 @@
 # Using re without an argument allows access to a number of common
 # regular expression constants.  For example:
 #
-#   re.space              -- matches " ", "\n" or "\t"
-#   re.spaces             -- matches any number of spaces (but at least one)
+#   re.space / re.spaces  -- matches " ", "\n" or "\t"
 #   re.digit / re.digits  -- matches a digit / sequence of digits
+#
+# Also, re without arguments can also be used to construct character
+# classes:
+#
+#   re.any                -- Matches any charactor
+#   re.any("abc")         -- Matches "a", "b", or "c"
+#   re.any("0-9")         -- Matches the digits 0 through 9
+#   re.any("A-Z", "a-z", "0-9", "_")
+#                         -- Matches alphanumeric or an underscore
 #
 # See Re::NULL for a complete list of common constants.
 #
