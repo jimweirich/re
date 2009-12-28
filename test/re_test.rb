@@ -46,11 +46,39 @@ class ReTest < Test::Unit::TestCase
     assert r =~ "xxx"
   end
 
+  def test_greedy_many
+    r =  re.any.many.capture(:x) + re("b")
+    result = r.match("xbxb")
+    assert result
+    assert_equal "xbx", result.data(:x)
+  end
+
+  def test_non_greedy_many
+    r =  re.any.many!.capture(:x) + re("b")
+    result = r.match("xbxb")
+    assert result
+    assert_equal "x", result.data(:x)
+  end
+
   def test_one_or_more
     r = re("x").one_or_more.all
     assert r !~ ""
     assert r =~ "x"
     assert r =~ "xxx"
+  end
+  
+  def test_greedy_one_or_more
+    r = re.any.one_or_more.capture(:any) + re("b")
+    result = r.match("xbxb")
+    assert result
+    assert_equal "xbx", result.data(:any)
+  end
+  
+  def test_non_greedy_one_or_more
+    r = re.any.one_or_more!.capture(:any) + re("b")
+    result = r.match("xbxb")
+    assert result
+    assert_equal "x", result.data(:any)
   end
   
   def test_repeat_fixed_number

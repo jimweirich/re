@@ -126,9 +126,19 @@ VERSION = Version::NUMBERS.join('.')
       Rexp.new(parenthesize(POSTFIX) + "*", POSTFIX, options, capture_keys)
     end
 
+    # self matches many times (zero or more) (non-greedy version)
+    def many!
+      Rexp.new(parenthesize(POSTFIX) + "*?", POSTFIX, options, capture_keys)
+    end
+
     # self matches one or more times
     def one_or_more
       Rexp.new(parenthesize(POSTFIX) + "+", POSTFIX, options, capture_keys)
+    end
+
+    # self matches one or more times
+    def one_or_more!
+      Rexp.new(parenthesize(POSTFIX) + "+?", POSTFIX, options, capture_keys)
     end
 
     # self is repeated from min to max times.  If max is omitted, then
