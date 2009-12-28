@@ -287,6 +287,7 @@ VERSION = Version::NUMBERS.join('.')
   def re(exp=nil)
     exp ? Rexp.literal(exp) : NULL
   end
+  extend self
   
   # Matches an empty string.  Additional common regular expression
   # constants are defined as methods on the NULL Rexp.  See Re::NULL.

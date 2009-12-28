@@ -6,6 +6,11 @@ require 're'
 class ReTest < Test::Unit::TestCase
   include Re
 
+  def test_module_access_to_re_function
+    r = Re.re("a").all
+    assert r =~ "a"
+  end
+
   def test_strings_match
     assert re("a") =~ "a"
     assert re("a") !~ "A"
