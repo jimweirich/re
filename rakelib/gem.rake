@@ -2,9 +2,8 @@ require 'rubygems'
 require 'lib/re'
 
 PKG_FILES = FileList[
-  'Rakefile',
+  '[A-Z]*',
   'rakefile/**/*',
-  'README.rdoc',
   'lib/*.rb',
   'test/*.rb'
   ]
