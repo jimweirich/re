@@ -1,0 +1,39 @@
+
+= Regular Expression Construction.
+
+Construct regular expressions using the re() method.
+
+Usage:
+
+  include Re
+
+  number = re.any("0-9").all
+  if number =~ string
+    puts "Matches!"
+  else
+    puts "No Match"
+  end
+
+Examples:
+
+  re("a")                -- matches "a"
+  re("a") + re("b")      -- matches "ab"
+  re("a") | re("b")      -- matches "a" or "b"
+  re("a").many           -- matches "", "a", "aaaaaa"
+  re("a").one_or_more    -- matches "a", "aaaaaa", but not ""
+  re("a").optional       -- matches "" or "a"
+  re("a").all            -- matches "a", but not "xab"
+
+See Re::Rexp for a complete list of expressions.
+
+Using re without an argument allows access to a number of common
+regular expression constants.  For example:
+
+  re.space              -- matches " ", "\n" or "\t"
+  re.spaces             -- matches any number of spaces (but at least one)
+  re.digit / re.digits  -- matches a digit / sequence of digits
+
+See Re::NULL for a complete list of common constants.
+
+See Re.re,
+Re::Rexp, and Re::NULL for details.
