@@ -2,6 +2,7 @@ require 'rubygems'
 
 PKG_FILES = FileList[
   'Rakefile',
+  'rakefile/**/*',
   'README.rdoc',
   'lib/*.rb',
   'test/*.rb'
@@ -13,7 +14,7 @@ else
   require 'rake/gempackagetask'
   SPEC = Gem::Specification.new do |s|
     s.name = 're'
-    s.version = '0.0.1'
+    s.version = Re::VERSION
     s.summary = "Construct Ruby Regular Expressions"
     s.description = <<-EOF
      The re library allows the easy construction of regular expressions via an expression language.
