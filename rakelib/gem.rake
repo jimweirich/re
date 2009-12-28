@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'lib/re'
 
 PKG_FILES = FileList[
   'Rakefile',
