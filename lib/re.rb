@@ -77,34 +77,47 @@
 #
 # See Re.re,
 # Re::Rexp, and Re::NULL for details.
-
+#
+# == Links:
+#
+# * Documentation :: http://re-lib.rubyforge.org
+# * Source        :: http://github.com/jimweirich/re
+# * Bug Tracker   :: http://www.pivotaltracker.com/projects/47758
+#
 module Re
-
-module Version
-  NUMBERS = [
-    MAJOR = 0,
-    MINOR = 0,
-    BUILD = 2,
-    BETA  = 1,
-  ].compact
-end
-VERSION = Version::NUMBERS.join('.')
-
+  
+  module Version
+    NUMBERS = [
+      MAJOR = 0,
+      MINOR = 0,
+      BUILD = 2,
+      BETA  = 1,
+    ].compact
+  end
+  VERSION = Version::NUMBERS.join('.')
+  
+  # Re::Result captures the result of a match and allows lookup of the
+  # captured groups by name.
   class Result
+    # Create a Re result object with the match data and the origina
+    # Re::Rexp object.
     def initialize(match_data, rexp)
       @match_data = match_data
       @rexp = rexp
     end
-    def data(name=nil)
-      if name
-        index = @rexp.capture_keys.index(name)
-        index ? @match_data[index+1] : nil
-      else
-        @match_data[0]
-      end
+    
+    # Return the full match
+    def full_match
+      @match_data[0]
+    end
+    
+    # Return the named capture data.
+    def [](name)
+      index = @rexp.capture_keys.index(name)
+      index ? @match_data[index+1] : nil
     end
   end
-  
+
   # Precedence levels for regular expressions:
 
   GROUPED = 4                   # (r), [chars]      :nodoc:

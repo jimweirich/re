@@ -55,14 +55,14 @@ class ReTest < Test::Unit::TestCase
     r =  re.any.many.capture(:x) + re("b")
     result = r.match("xbxb")
     assert result
-    assert_equal "xbx", result.data(:x)
+    assert_equal "xbx", result[:x]
   end
 
   def test_non_greedy_many
     r =  re.any.many!.capture(:x) + re("b")
     result = r.match("xbxb")
     assert result
-    assert_equal "x", result.data(:x)
+    assert_equal "x", result[:x]
   end
 
   def test_one_or_more
@@ -76,14 +76,14 @@ class ReTest < Test::Unit::TestCase
     r = re.any.one_or_more.capture(:any) + re("b")
     result = r.match("xbxb")
     assert result
-    assert_equal "xbx", result.data(:any)
+    assert_equal "xbx", result[:any]
   end
   
   def test_non_greedy_one_or_more
     r = re.any.one_or_more!.capture(:any) + re("b")
     result = r.match("xbxb")
     assert result
-    assert_equal "x", result.data(:any)
+    assert_equal "x", result[:any]
   end
   
   def test_repeat_fixed_number
@@ -396,7 +396,7 @@ class ReTest < Test::Unit::TestCase
     r = re.any("a-z").one_or_more.capture(:word)
     result = (r =~ "012abc789")
     assert result
-    assert_equal "abc", result.data(:word)
+    assert_equal "abc", result[:word]
   end
 
   def test_multiple_capture
@@ -406,10 +406,10 @@ class ReTest < Test::Unit::TestCase
     result = (r =~ "   now   123\n")
     assert result
     assert_equal [:everything, :word, :number], r.capture_keys
-    assert_equal "now", result.data(:word)
-    assert_equal "123", result.data(:number)
-    assert_equal "now   123", result.data(:everything)
-    assert_equal "now   123", result.data
+    assert_equal "now", result[:word]
+    assert_equal "123", result[:number]
+    assert_equal "now   123", result[:everything]
+    assert_equal "now   123", result.full_match
   end
   
   def test_precedence_concatentaion_vs_alteration
@@ -430,7 +430,7 @@ class ReTest < Test::Unit::TestCase
 
     result = delim_definition.match("//[a][b][xyz]\n1a2b3xyz4")
     assert result
-    assert_equal "[a][b][xyz]", result.data(:delims)
+    assert_equal "[a][b][xyz]", result[:delims]
   end
   
   def test_date_parser
@@ -457,9 +457,9 @@ class ReTest < Test::Unit::TestCase
   def test_date_capture
     result = date_re.match("2010/02/14")
     assert result
-    assert_equal "2010", result.data(:year)
-    assert_equal "02", result.data(:month)
-    assert_equal "14", result.data(:day)
+    assert_equal "2010", result[:year]
+    assert_equal "02", result[:month]
+    assert_equal "14", result[:day]
   end
 
   private
