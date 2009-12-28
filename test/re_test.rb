@@ -429,21 +429,6 @@ class ReTest < Test::Unit::TestCase
   end
   
   def test_date_parser
-    # (19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])
-
-    delim      = re.any("- /.")
-    n_19_or_20 = re("19") | re("20")
-    n_1_to_9   = re("0") + re.any("1-9")
-    n_10_to_12 = re("1") + re.any("012")
-    n_10_to_29 = re.any("12") + re.any("0-9")
-    n_30_or_31 = re("3") + re.any("01")
-    
-    year = n_19_or_20 + re.digit.repeat(2)
-    month = n_1_to_9 | n_10_to_12
-    day = n_1_to_9 | n_10_to_29 | n_30_or_31
-
-    date_re = (year.capture(:year) + delim + month.capture(:month) + delim + day.capture(:day)).all
-    
     assert date_re.match("1900/01/01")
     assert date_re.match("1956/01/01")
     assert date_re.match("2000/01/01")
@@ -463,6 +448,40 @@ class ReTest < Test::Unit::TestCase
     assert ! date_re.match("2010/1/01")
     assert ! date_re.match("2010/01/1")
   end
+  
+  def test_date_capture
+    result = date_re.match("2010/02/14")
+    assert result
+    assert_equal "2010", result.data(:year)
+    assert_equal "02", result.data(:month)
+    assert_equal "14", result.data(:day)
+  end
 
+  private
 
+  def date_re
+    self.class.date_re
+  end
+  
+  class << self
+    include Re
+    def date_re
+      # (19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])
+      @date_re ||=
+        begin
+          delim_re                = re.any("- /.")
+          century_prefix_re       = re("19") | re("20")
+          under_ten_re            = re("0") + re.any("1-9")
+          ten_to_twelve_re        = re("1") + re.any("012")
+          ten_and_under_thirty_re = re.any("12") + re.any("0-9")
+          thirties_re             = re("3") + re.any("01")
+          
+          year = century_prefix_re + re.digit.repeat(2)
+          month = under_ten_re | ten_to_twelve_re
+          day = under_ten_re | ten_and_under_thirty_re | thirties_re
+          
+          (year.capture(:year) + delim_re + month.capture(:month) + delim_re + day.capture(:day)).all
+        end
+    end
+  end  
 end
