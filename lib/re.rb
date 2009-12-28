@@ -40,6 +40,12 @@
 # Re::Rexp, and Re::NULL for details.
 
 module Re
+
+module Version
+  NUMBERS = [ MAJOR = 0, MINOR = 0, BUILD = 1 ]
+end
+VERSION = Version::NUMBERS.join('.')
+
   class Result
     def initialize(match_data, rexp)
       @match_data = match_data
