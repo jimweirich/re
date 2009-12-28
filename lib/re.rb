@@ -46,7 +46,7 @@ module Version
     MAJOR = 0,
     MINOR = 0,
     BUILD = 2,
-    BETA = nil,
+    BETA  = 1,
   ].compact
 end
 VERSION = Version::NUMBERS.join('.')
