@@ -3,7 +3,7 @@
 
 Complex regular expressions are hard to construct and even harder to
 read.  The Re library allows users to construct complex regular
-expressions from simplier expressions.  For example, consider the
+expressions from simpler expressions.  For example, consider the
 following regular expression that will parse dates:
 
    /\A((?:19|20)[0-9]{2})[\- \/.](0[1-9]|1[012])[\- \/.](0[1-9]|[12][0-9]|3[01])\z/
