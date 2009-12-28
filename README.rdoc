@@ -3,6 +3,8 @@
 
 Construct regular expressions using the re() method.
 
+Version: 0.0.1
+
 Usage:
 
   include Re
