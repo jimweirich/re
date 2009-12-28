@@ -30,7 +30,7 @@ else
     ]
     s.author = "Jim Weirich"
     s.email = "jim.weirich@gmail.com"
-    s.homepage = "http://re.rubyforge.org"
+    s.homepage = "http://re-lib.rubyforge.org"
     s.rubyforge_project = "re-lib"
   end
 
