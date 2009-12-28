@@ -75,22 +75,22 @@ VERSION = Version::NUMBERS.join('.')
 
   # Constructed regular expressions.
   class Rexp
-    attr_reader :string, :level, :flags, :capture_keys
+    attr_reader :string, :level, :options, :capture_keys
 
     # Create a regular expression from the string.  The regular
     # expression will have a precedence of +level+ and will recognized
     # +keys+ as a list of capture keys.
-    def initialize(string, level, flags, keys)
+    def initialize(string, level, options, keys)
       @string = string
       @level = level
-      @flags = flags
+      @options = options
       @capture_keys = keys
     end
 
     # Return a real regular expression from the the constructed
     # regular expression.
     def regexp
-      @regexp ||= Regexp.new(string, flags)
+      @regexp ||= Regexp.new(string, options)
     end
 
     # Does it match a string? (returns Re::Result if match, nil otherwise)
@@ -104,7 +104,7 @@ VERSION = Version::NUMBERS.join('.')
     def +(other)
       Rexp.new(parenthesize(CONCAT) + other.parenthesize(CONCAT),
         CONCAT,
-        flags | other.flags,
+        options | other.options,
         capture_keys + other.capture_keys)
     end
 
@@ -112,43 +112,43 @@ VERSION = Version::NUMBERS.join('.')
     def |(other)
       Rexp.new(parenthesize(ALT) + "|" + other.parenthesize(ALT),
         ALT,
-        flags | other.flags,
+        options | other.options,
         capture_keys + other.capture_keys)
     end
 
     # self is optional
     def optional
-      Rexp.new(parenthesize(POSTFIX) + "?", POSTFIX, flags, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "?", POSTFIX, options, capture_keys)
     end
 
     # self matches many times (zero or more)
     def many
-      Rexp.new(parenthesize(POSTFIX) + "*", POSTFIX, flags, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "*", POSTFIX, options, capture_keys)
     end
 
     # self matches one or more times
     def one_or_more
-      Rexp.new(parenthesize(POSTFIX) + "+", POSTFIX, flags, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "+", POSTFIX, options, capture_keys)
     end
 
     # self is repeated from min to max times.  If max is omitted, then
     # it is repeated exactly min times.
     def repeat(min, max=nil)
       if min && max
-        Rexp.new(parenthesize(POSTFIX) + "{#{min},#{max}}", POSTFIX, flags, capture_keys)
+        Rexp.new(parenthesize(POSTFIX) + "{#{min},#{max}}", POSTFIX, options, capture_keys)
       else
-        Rexp.new(parenthesize(POSTFIX) + "{#{min}}", POSTFIX, flags, capture_keys)
+        Rexp.new(parenthesize(POSTFIX) + "{#{min}}", POSTFIX, options, capture_keys)
       end
     end
 
     # self is repeated at least min times
     def at_least(min)
-      Rexp.new(parenthesize(POSTFIX) + "{#{min},}", POSTFIX, flags, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "{#{min},}", POSTFIX, options, capture_keys)
     end
 
     # self is repeated at least max times
     def at_most(max)
-      Rexp.new(parenthesize(POSTFIX) + "{0,#{max}}", POSTFIX, flags, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "{0,#{max}}", POSTFIX, options, capture_keys)
     end
 
     # None of the given characters will match.
@@ -168,27 +168,27 @@ VERSION = Version::NUMBERS.join('.')
 
     # self must match at the beginning of a line
     def bol
-      Rexp.new("^" + parenthesize(CONCAT), CONCAT, flags, capture_keys)
+      Rexp.new("^" + parenthesize(CONCAT), CONCAT, options, capture_keys)
     end
 
     # self must match at the end of a line
     def eol
-      Rexp.new(parenthesize(CONCAT) + "$", CONCAT, flags, capture_keys)
+      Rexp.new(parenthesize(CONCAT) + "$", CONCAT, options, capture_keys)
     end
 
     # self must match at the beginning of the string
     def begin
-      Rexp.new("\\A" + parenthesize(CONCAT), CONCAT, flags, capture_keys)
+      Rexp.new("\\A" + parenthesize(CONCAT), CONCAT, options, capture_keys)
     end
 
     # self must match the end of the string (with an optional new line)
     def end
-      Rexp.new(parenthesize(CONCAT) + "\\Z", CONCAT, flags, capture_keys)
+      Rexp.new(parenthesize(CONCAT) + "\\Z", CONCAT, options, capture_keys)
     end
 
     # self must match the very end of the string (including any new lines)
     def very_end
-      Rexp.new(parenthesize(CONCAT) + "\\z", CONCAT, flags, capture_keys)
+      Rexp.new(parenthesize(CONCAT) + "\\z", CONCAT, options, capture_keys)
     end
 
     # self must match an entire line.
@@ -198,32 +198,32 @@ VERSION = Version::NUMBERS.join('.')
 
     # self is contained in a non-capturing group
     def group
-      Rexp.new("(?:" + string + ")", GROUPED, flags, capture_keys)
+      Rexp.new("(?:" + string + ")", GROUPED, options, capture_keys)
     end
 
     # self is a capturing group with the given name.
     def capture(name)
-      Rexp.new("(" + string + ")", GROUPED, flags, [name] + capture_keys)
+      Rexp.new("(" + string + ")", GROUPED, options, [name] + capture_keys)
     end
     
     # self will work in multiline matches
     def multiline
-      Rexp.new(string, GROUPED, flags|Regexp::MULTILINE, capture_keys)
+      Rexp.new(string, GROUPED, options|Regexp::MULTILINE, capture_keys)
     end
     
     # Is this a multiline regular expression?
     def multiline?
-      (flags & Regexp::MULTILINE) != 0
+      (options & Regexp::MULTILINE) != 0
     end
 
     # self will work in multiline matches
     def ignore_case
-      Rexp.new(string, GROUPED, flags|Regexp::IGNORECASE, capture_keys)
+      Rexp.new(string, GROUPED, options|Regexp::IGNORECASE, capture_keys)
     end
 
     # Does this regular expression ignore case?
     def ignore_case?
-      (flags & Regexp::IGNORECASE) != 0
+      (options & Regexp::IGNORECASE) != 0
     end
 
     # String representation of the constructed regular expression.

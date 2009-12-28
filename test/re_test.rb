@@ -104,7 +104,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "\n"
   end
   
-  def test_no_flags
+  def test_no_options
     r = re("a")
     assert ! r.ignore_case?
     assert ! r.multiline?
