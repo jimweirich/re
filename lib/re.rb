@@ -72,7 +72,8 @@
 #   re.any("A-Z", "a-z", "0-9", "_")
 #                         -- Matches alphanumeric or an underscore
 #
-# See Re::NULL for a complete list of common constants.
+# See Re::NULL for a complete list of common constants and character
+# class functions.
 #
 # See Re.re,
 # Re::Rexp, and Re::NULL for details.
