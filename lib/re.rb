@@ -492,7 +492,8 @@ module Re
   end
 
   # Matches an empty string.  Additional common regular expression
-  # constants are defined as methods on the NULL Rexp.  See Re::NULL.
+  # construction methods are defined on NULL. See
+  # Re::ConstructionMethods for details.
   NULL = Rexp.literal("")
   NULL.extend(ConstructionMethods)
 
