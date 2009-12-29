@@ -92,6 +92,7 @@
 #
 # Documentation :: http://re-lib.rubyforge.org
 # Source        :: http://github.com/jimweirich/re
+# GemCutter     :: http://gemcutter.org/gems/re
 # Bug Tracker   :: http://www.pivotaltracker.com/projects/47758
 # Author        :: jim.weirich@gmail.com
 #
