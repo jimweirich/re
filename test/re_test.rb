@@ -138,22 +138,39 @@ class ReTest < Test::Unit::TestCase
   end
   
   def test_no_options
-    r = re("a")
+    r = re("a") + re.any + re("b")
     assert ! r.ignore_case?
     assert ! r.multiline?
+    assert r =~ "axb"
+    assert r !~ "a\nb"
+    assert r !~ "Axb"
   end
 
   def test_any_with_multiline
-    r = re.any.multiline.all
+    r = re.any.all.multiline
     assert r.multiline?
     assert r =~ "\n"
   end
   
   def test_ignore_case
-    r = re("a").ignore_case.all
-    assert r.ignore_case?
+    r = re("a").all.ignore_case
     assert r =~ "a"
     assert r =~ "A"
+  end
+  
+  def test_partial_ignore_case
+    r = (re("a").ignore_case + re("b")).all
+    assert r =~ "ab"
+    assert r =~ "Ab"
+    assert r !~ "aB"
+  end
+  
+  def test_options_no_not_modify_existing_rexps
+    r = re("a")
+    r2 = r.ignore_case
+    
+    assert r !~ "A"
+    assert r2 =~ "A"
   end
 
   def test_any_with_a_character_list

@@ -137,25 +137,44 @@ module Re
   CONCAT  = 2                   # r + r, literal    :nodoc:
   ALT     = 1                   # r | r             :nodoc:
 
+  # Mode Bits
+
+  MULTILINE_MODE = Regexp::MULTILINE
+  IGNORE_CASE_MODE = Regexp::IGNORECASE
 
   # Constructed regular expressions.
   class Rexp
-    attr_reader :string, :level, :options, :capture_keys
+    attr_reader :level, :options, :capture_keys
 
     # Create a regular expression from the string.  The regular
     # expression will have a precedence of +level+ and will recognized
     # +keys+ as a list of capture keys.
-    def initialize(string, level, options, keys)
-      @string = string
+    def initialize(string, level, keys, options=0)
+      @raw_string = string
       @level = level
-      @options = options
       @capture_keys = keys
+      @options = options
     end
+    
+    def string
+      if options == 0
+        @raw_string
+      else
+        "(?#{encode_options}:" + @raw_string + ")"
+      end
+    end
+    
+    # Encode the options into a string (e.g "", "m", "i", or "mi")
+    def encode_options          # :nodoc:
+      (multiline? ? "m" : "") +
+        (ignore_case? ? "i" : "")
+    end
+    private :encode_options
 
     # Return a real regular expression from the the constructed
     # regular expression.
     def regexp
-      @regexp ||= Regexp.new(string, options)
+      @regexp ||= Regexp.new(string)
     end
 
     # Does it match a string? (returns Re::Result if match, nil otherwise)
@@ -169,7 +188,6 @@ module Re
     def +(other)
       Rexp.new(parenthesize(CONCAT) + other.parenthesize(CONCAT),
         CONCAT,
-        options | other.options,
         capture_keys + other.capture_keys)
     end
 
@@ -177,58 +195,57 @@ module Re
     def |(other)
       Rexp.new(parenthesize(ALT) + "|" + other.parenthesize(ALT),
         ALT,
-        options | other.options,
         capture_keys + other.capture_keys)
     end
 
     # self is optional
     def optional
-      Rexp.new(parenthesize(POSTFIX) + "?", POSTFIX, options, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "?", POSTFIX, capture_keys)
     end
 
     # self matches many times (zero or more)
     def many
-      Rexp.new(parenthesize(POSTFIX) + "*", POSTFIX, options, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "*", POSTFIX, capture_keys)
     end
 
     # self matches many times (zero or more, non-greedy version)
     def many!
-      Rexp.new(parenthesize(POSTFIX) + "*?", POSTFIX, options, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "*?", POSTFIX, capture_keys)
     end
 
     # self matches one or more times
     def one_or_more
-      Rexp.new(parenthesize(POSTFIX) + "+", POSTFIX, options, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "+", POSTFIX, capture_keys)
     end
 
     # self matches one or more times (non-greedy version)
     def one_or_more!
-      Rexp.new(parenthesize(POSTFIX) + "+?", POSTFIX, options, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "+?", POSTFIX, capture_keys)
     end
 
     # self is repeated from min to max times.  If max is omitted, then
     # it is repeated exactly min times.
     def repeat(min, max=nil)
       if min && max
-        Rexp.new(parenthesize(POSTFIX) + "{#{min},#{max}}", POSTFIX, options, capture_keys)
+        Rexp.new(parenthesize(POSTFIX) + "{#{min},#{max}}", POSTFIX, capture_keys)
       else
-        Rexp.new(parenthesize(POSTFIX) + "{#{min}}", POSTFIX, options, capture_keys)
+        Rexp.new(parenthesize(POSTFIX) + "{#{min}}", POSTFIX, capture_keys)
       end
     end
 
     # self is repeated at least min times
     def at_least(min)
-      Rexp.new(parenthesize(POSTFIX) + "{#{min},}", POSTFIX, options, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "{#{min},}", POSTFIX, capture_keys)
     end
 
     # self is repeated at least max times
     def at_most(max)
-      Rexp.new(parenthesize(POSTFIX) + "{0,#{max}}", POSTFIX, options, capture_keys)
+      Rexp.new(parenthesize(POSTFIX) + "{0,#{max}}", POSTFIX, capture_keys)
     end
 
     # None of the given characters will match.
     def none(chars)
-      Rexp.new("[^" + Rexp.escape_any(chars) + "]", GROUPED, 0, [])
+      Rexp.new("[^" + Rexp.escape_any(chars) + "]", GROUPED, [])
     end
 
     # self must match all of the string
@@ -243,27 +260,27 @@ module Re
 
     # self must match at the beginning of a line
     def bol
-      Rexp.new("^" + parenthesize(CONCAT), CONCAT, options, capture_keys)
+      Rexp.new("^" + parenthesize(CONCAT), CONCAT, capture_keys)
     end
 
     # self must match at the end of a line
     def eol
-      Rexp.new(parenthesize(CONCAT) + "$", CONCAT, options, capture_keys)
+      Rexp.new(parenthesize(CONCAT) + "$", CONCAT, capture_keys)
     end
 
     # self must match at the beginning of the string
     def begin
-      Rexp.new("\\A" + parenthesize(CONCAT), CONCAT, options, capture_keys)
+      Rexp.new("\\A" + parenthesize(CONCAT), CONCAT, capture_keys)
     end
 
     # self must match the end of the string (with an optional new line)
     def end
-      Rexp.new(parenthesize(CONCAT) + "\\Z", CONCAT, options, capture_keys)
+      Rexp.new(parenthesize(CONCAT) + "\\Z", CONCAT, capture_keys)
     end
 
     # self must match the very end of the string (including any new lines)
     def very_end
-      Rexp.new(parenthesize(CONCAT) + "\\z", CONCAT, options, capture_keys)
+      Rexp.new(parenthesize(CONCAT) + "\\z", CONCAT, capture_keys)
     end
 
     # self must match an entire line.
@@ -273,32 +290,32 @@ module Re
 
     # self is contained in a non-capturing group
     def group
-      Rexp.new("(?:" + string + ")", GROUPED, options, capture_keys)
+      Rexp.new("(?:" + string + ")", GROUPED, capture_keys)
     end
 
     # self is a capturing group with the given name.
     def capture(name)
-      Rexp.new("(" + string + ")", GROUPED, options, [name] + capture_keys)
+      Rexp.new("(" + string + ")", GROUPED, [name] + capture_keys)
     end
     
-    # self will work in multiline matches
+    # self will be in multiline mode.
     def multiline
-      Rexp.new(string, GROUPED, options|Regexp::MULTILINE, capture_keys)
+      Rexp.new(@raw_string, GROUPED, capture_keys, options | MULTILINE_MODE)
     end
     
     # Is this a multiline regular expression?
     def multiline?
-      (options & Regexp::MULTILINE) != 0
+      (options & MULTILINE_MODE) != 0
     end
 
-    # self will work in multiline matches
+    # self will ignore case in matches.
     def ignore_case
-      Rexp.new(string, GROUPED, options|Regexp::IGNORECASE, capture_keys)
+      Rexp.new(@raw_string, GROUPED, capture_keys, options | IGNORE_CASE_MODE)
     end
 
     # Does this regular expression ignore case?
     def ignore_case?
-      (options & Regexp::IGNORECASE) != 0
+      (options & IGNORE_CASE_MODE) != 0
     end
 
     # String representation of the constructed regular expression.
@@ -324,7 +341,7 @@ module Re
     # Create a literal regular expression (concatenation level
     # precedence, no capture keywords).
     def self.literal(chars)
-      new(Regexp.escape(chars), CONCAT, 0, [])
+      new(Regexp.escape(chars), CONCAT, [])
     end
 
     # Create a regular expression from a raw string representing a
@@ -332,7 +349,7 @@ module Re
     # expression with the highest level of precedence (you should use
     # parenthesis if it is not).
     def self.raw(re_string)     # :no-doc:
-      new(re_string, GROUPED, 0, [])
+      new(re_string, GROUPED, [])
     end
 
     # Escape any special characters.
@@ -404,7 +421,7 @@ module Re
             any_chars << Rexp.escape_any(chs)
           end
         end
-        Rexp.new("[" + any_chars  + "]", GROUPED, 0, [])
+        Rexp.new("[" + any_chars  + "]", GROUPED, [])
       end
     end
     
