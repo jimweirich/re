@@ -90,10 +90,10 @@
 #
 # == Links:
 #
-# * Documentation :: http://re-lib.rubyforge.org
-# * Source        :: http://github.com/jimweirich/re
-# * Bug Tracker   :: http://www.pivotaltracker.com/projects/47758
-# * Author        :: jim.weirich@gmail.com
+# Documentation :: http://re-lib.rubyforge.org
+# Source        :: http://github.com/jimweirich/re
+# Bug Tracker   :: http://www.pivotaltracker.com/projects/47758
+# Author        :: jim.weirich@gmail.com
 #
 module Re
   
