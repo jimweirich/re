@@ -8,8 +8,10 @@ file "README.rdoc" => ["lib/re.rb", "rakelib/readme.rake"] do |t|
       fin.each do |line|
         next if line =~ /^#.*bin\/ruby/
         break if line !~ /^#/
-        if line =~ /Usage:/
-          fout.puts "== Version: #{Re::VERSION}"
+        if line =~ /^# *== Usage/
+          fout.puts "== Version"
+          fout.puts
+          fout.puts "This document describes Re version #{Re::VERSION}."
           fout.puts 
         end
         fout.puts line.sub(/^# ?/,'')
