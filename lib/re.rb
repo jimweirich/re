@@ -395,6 +395,8 @@ module Re
   # re() without arguments can be used to access the methods.
   module ConstructionMethods
     
+    ANY_CHAR =  Rexp.raw(".")
+    
     # :call-seq:
     #   re.null
     #
@@ -431,17 +433,9 @@ module Re
     #
     def any(*chars)
       if chars.empty?
-        @dot ||= Rexp.raw(".")
+        ANY_CHAR
       else
-        any_chars = ''
-        chars.each do |chs|
-          if /^.-.$/ =~ chs
-            any_chars << chs
-          else
-            any_chars << Rexp.escape_any(chs)
-          end
-        end
-        Rexp.new("[" + any_chars  + "]", GROUPED, [])
+        Rexp.new("[" + char_class(chars)  + "]", GROUPED, [])
       end
     end
     
@@ -467,6 +461,10 @@ module Re
     #   re.any("A-Z", "a-z", "0-9")       -- matches non-alphanumerics
     #
     def none(*chars)
+      Rexp.new("[^" + char_class(chars)  + "]", GROUPED, [])
+    end
+
+    def char_class(chars)
       any_chars = ''
       chars.each do |chs|
         if /^.-.$/ =~ chs
@@ -475,8 +473,9 @@ module Re
           any_chars << Rexp.escape_any(chs)
         end
       end
-      Rexp.new("[^" + any_chars  + "]", GROUPED, [])
+      any_chars
     end
+    private :char_class
 
     # :call-seq:
     #   re.space
