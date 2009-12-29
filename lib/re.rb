@@ -191,7 +191,7 @@ module Re
       Rexp.new(parenthesize(POSTFIX) + "*", POSTFIX, options, capture_keys)
     end
 
-    # self matches many times (zero or more) (non-greedy version)
+    # self matches many times (zero or more, non-greedy version)
     def many!
       Rexp.new(parenthesize(POSTFIX) + "*?", POSTFIX, options, capture_keys)
     end
@@ -201,7 +201,7 @@ module Re
       Rexp.new(parenthesize(POSTFIX) + "+", POSTFIX, options, capture_keys)
     end
 
-    # self matches one or more times
+    # self matches one or more times (non-greedy version)
     def one_or_more!
       Rexp.new(parenthesize(POSTFIX) + "+?", POSTFIX, options, capture_keys)
     end
