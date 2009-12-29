@@ -82,6 +82,65 @@
 #
 # See Re.re, Re::Rexp, and Re::ConstructionMethods for details.
 #
+# == Performance
+#
+# We should say a word or two about performance.
+#
+# First of all, building regular expressions using Re is slow.  If you
+# use Re to build regular expressions, you are encouraged to build the
+# regular expression once and reuse it as needed.  This means you
+# won't do a lot of inline expressions using Re, but rather assign the
+# generated Re regular expression to a constant.  For example:
+#
+#   PHONE_RE = re.digit.repeat(3).capture(:area) +
+#                re("-") + 
+#                re.digit.repeat(3).capture(:exchange) +
+#                re("-") +
+#                re.digit.repeat(4)).capture(:subscriber)
+#
+# Alternatively, you can arrange for the regular expression to be
+# constructed only when actually needed.  Something like:q
+#
+#   def phone_re
+#     @phone_re ||= re.digit.repeat(3).capture(:area) +
+#                     re("-") + 
+#                     re.digit.repeat(3).capture(:exchange) +
+#                     re("-") +
+#                     re.digit.repeat(4)).capture(:subscriber)
+#   end
+#
+# That method constructs the phone number regular expression once and
+# returns a cached value thereafter.  Just make sure you put the
+# method in an object that is instantiated once (e.g. a class method).
+#
+# When used in matching, Re regular expressions perform fairly well
+# compared to native regular expressions.  The overhead is a small
+# number of extra method calls and the creation of a Re::Result object
+# to return the match results.
+#
+# If regular expression performance is a premium in your application,
+# then you can still use Re to construct the regular expression and
+# extract the raw Ruby Regexp object to be used for the actual
+# matching.  You lose the ability to use named capture groups, but you
+# get raw Ruby regular expression matching performance.
+#
+# For example, if you wanted to use the raw regular expression from
+# PHONE_RE defined above, you could extract the regular expression
+# like this:
+#
+#   PHONE_REGEXP = PHONE_RE.regexp
+#
+# And then use it directly:
+#
+#   if PHONE_REGEXP =~ string
+#     # blah blah blah
+#   end
+#
+# The above match runs at full Ruby matching speed.  If you still
+# wanted named capture groups, you can something like this:
+#
+#   match_data = PHONE_REGEXP.match(string)
+#   area_code = match_data[PHONE_RE.name_map[:area]]
 #
 # == License and Copyright
 #
