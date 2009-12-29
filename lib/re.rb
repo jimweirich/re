@@ -168,6 +168,14 @@ module Re
     end
     alias =~ match
     
+    def name_map
+      result = {}
+      capture_keys.each_with_index do |key, i|
+        result[key] = i + 1
+      end
+      result
+    end
+
     # New regular expresion that matches the concatenation of self and
     # other.
     def +(other)

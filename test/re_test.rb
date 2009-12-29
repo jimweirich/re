@@ -494,6 +494,15 @@ class ReTest < Test::Unit::TestCase
     assert_equal "02", result[:month]
     assert_equal "14", result[:day]
   end
+  
+  def test_name_map_returns_map_of_keywords
+    r = re("a").capture(:a) + re("b").capture(:b) + re("c").capture(:c)
+    result = r.match("abc")
+    assert result
+    assert_equal 1, r.name_map[:a]
+    assert_equal 2, r.name_map[:b]
+    assert_equal 3, r.name_map[:c]
+  end
 
   private
 
