@@ -34,10 +34,10 @@
 # easier to independently verify.  As an additional bonus, the capture
 # groups can be retrieved by name:
 #
-#       result = date.match("2009-01-23")
-#       result.data(:year)   # => "2009"
-#       result.data(:month)  # => "01"
-#       result.data(:day)    # => "23"
+#   result = date.match("2009-01-23")
+#   result.data(:year)   # => "2009"
+#   result.data(:month)  # => "01"
+#   result.data(:day)    # => "23"
 #
 # == Usage:
 #
