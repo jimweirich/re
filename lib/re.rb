@@ -171,8 +171,7 @@ module Re
     end
     private :encode_options
 
-    # Return a real regular expression from the the constructed
-    # regular expression.
+    # Return a Regexp from the the constructed regular expression.
     def regexp
       @regexp ||= Regexp.new(string)
     end
@@ -184,47 +183,52 @@ module Re
     end
     alias =~ match
     
-    # Concatenate two regular expressions
+    # New regular expresion that matches the concatenation of self and
+    # other.
     def +(other)
       Rexp.new(parenthesize(CONCAT) + other.parenthesize(CONCAT),
         CONCAT,
         capture_keys + other.capture_keys)
     end
 
-    # Matches either self or other
+    # New regular expresion that matches either self or other.
     def |(other)
       Rexp.new(parenthesize(ALT) + "|" + other.parenthesize(ALT),
         ALT,
         capture_keys + other.capture_keys)
     end
 
-    # self is optional
+    # New regular expression where self is optional.
     def optional
       Rexp.new(parenthesize(POSTFIX) + "?", POSTFIX, capture_keys)
     end
 
-    # self matches many times (zero or more)
+    # New regular expression that matches self many (zero or more)
+    # times.
     def many
       Rexp.new(parenthesize(POSTFIX) + "*", POSTFIX, capture_keys)
     end
 
-    # self matches many times (zero or more, non-greedy version)
+    # New regular expression that matches self many (zero or more)
+    # times (non-greedy version).
     def many!
       Rexp.new(parenthesize(POSTFIX) + "*?", POSTFIX, capture_keys)
     end
 
-    # self matches one or more times
+    # New regular expression that matches self one or more times.
     def one_or_more
       Rexp.new(parenthesize(POSTFIX) + "+", POSTFIX, capture_keys)
     end
 
-    # self matches one or more times (non-greedy version)
+    # New regular expression that matches self one or more times
+    # (non-greedy version).
     def one_or_more!
       Rexp.new(parenthesize(POSTFIX) + "+?", POSTFIX, capture_keys)
     end
 
-    # self is repeated from min to max times.  If max is omitted, then
-    # it is repeated exactly min times.
+    # New regular expression that matches self between +min+ and +max+
+    # times (inclusive).  If +max+ is omitted, then it must match self
+    # exactly exactly +min+ times.
     def repeat(min, max=nil)
       if min && max
         Rexp.new(parenthesize(POSTFIX) + "{#{min},#{max}}", POSTFIX, capture_keys)
@@ -233,87 +237,102 @@ module Re
       end
     end
 
-    # self is repeated at least min times
+    # New regular expression that matches self at least +min+ times.
     def at_least(min)
       Rexp.new(parenthesize(POSTFIX) + "{#{min},}", POSTFIX, capture_keys)
     end
 
-    # self is repeated at least max times
+    # New regular expression that matches self at most +max+ times.
     def at_most(max)
       Rexp.new(parenthesize(POSTFIX) + "{0,#{max}}", POSTFIX, capture_keys)
     end
 
-    # None of the given characters will match.
+    # New regular expression that matches a single character that is
+    # not in the given set of characters.
     def none(chars)
       Rexp.new("[^" + Rexp.escape_any(chars) + "]", GROUPED, [])
     end
 
-    # self must match all of the string
+    # New regular expression that matches self across the complete
+    # string.
     def all
       self.begin.very_end
     end
 
-    # self must match almost all of the string (trailing new lines are allowed)
+    # New regular expression that matches self across most of the
+    # entire string (trailing new lines are not required to match).
     def almost_all
       self.begin.end
     end
 
-    # self must match at the beginning of a line
+    # New regular expression that matches self at the beginning of a line.
     def bol
       Rexp.new("^" + parenthesize(CONCAT), CONCAT, capture_keys)
     end
 
-    # self must match at the end of a line
+    # New regular expression that matches self at the end of the line.
     def eol
       Rexp.new(parenthesize(CONCAT) + "$", CONCAT, capture_keys)
     end
 
-    # self must match at the beginning of the string
+    # New regular expression that matches self at the beginning of a string.
     def begin
       Rexp.new("\\A" + parenthesize(CONCAT), CONCAT, capture_keys)
     end
 
-    # self must match the end of the string (with an optional new line)
+    # New regular expression that matches self at the end of a string
+    # (trailing new lines are allowed to not match).
     def end
       Rexp.new(parenthesize(CONCAT) + "\\Z", CONCAT, capture_keys)
     end
 
-    # self must match the very end of the string (including any new lines)
+    # New regular expression that matches self at the very end of a string
+    # (trailing new lines are required to match).
     def very_end
       Rexp.new(parenthesize(CONCAT) + "\\z", CONCAT, capture_keys)
     end
 
-    # self must match an entire line.
+    # New expression that matches self across an entire line.
     def line
       self.bol.eol
     end
 
-    # self is contained in a non-capturing group
+    # New regular expression that is grouped, but does not cause the
+    # capture of a match.  The Re library normally handles grouping
+    # automatically, so this method shouldn't be needed by client
+    # software for normal operations.
     def group
       Rexp.new("(?:" + string + ")", GROUPED, capture_keys)
     end
 
-    # self is a capturing group with the given name.
+    # New regular expression that captures text matching self.  The
+    # matching text may be retrieved from the Re::Result object using
+    # the +name+ (a symbol) as the keyword.
     def capture(name)
       Rexp.new("(" + string + ")", GROUPED, [name] + capture_keys)
     end
     
-    # self will be in multiline mode.
+    # New regular expression that matches self in multiline mode.
     def multiline
       Rexp.new(@raw_string, GROUPED, capture_keys, options | MULTILINE_MODE)
     end
     
-    # Is this a multiline regular expression?
+    # Is this a multiline regular expression?  The multiline mode of
+    # interior regular expressions are not reflected in value returned
+    # by this method.
     def multiline?
       (options & MULTILINE_MODE) != 0
     end
 
-    # self will ignore case in matches.
+    # New regular expression that matches self while ignoring case.
     def ignore_case
       Rexp.new(@raw_string, GROUPED, capture_keys, options | IGNORE_CASE_MODE)
     end
 
-    # Does this regular expression ignore case?
+    # Does this regular expression ignore case?  Note that this only
+    # queries the outer most regular expression.  The ignore case mode
+    # of interior regular expressions are not reflected in value
+    # returned by this method.
     def ignore_case?
       (options & IGNORE_CASE_MODE) != 0
     end
@@ -328,9 +347,8 @@ module Re
     # String representation with grouping if needed.
     #
     # If the precedence of the current Regexp is less than the new
-    # precedence level, return the string wrapped in a non-capturing
-    # group.  Otherwise just return the string.
-    def parenthesize(new_level)
+    # precedence level, return the encoding wrapped in a non-capturing
+    # group.  Otherwise just return the encoding.
       if level >= new_level
         string
       else
@@ -338,22 +356,26 @@ module Re
       end
     end
     
-    # Create a literal regular expression (concatenation level
-    # precedence, no capture keywords).
+    # The string encoding of current regular expression.  The encoding
+    # will include option flags if specified.
+    # New regular expression that matches the literal characters in
+    # +chars+.  For example, Re.literal("a(b)") will be equivalent to
+    # /a\(b\)/.  Note that characters with special meanings in regular
+    # expressions will be quoted.
     def self.literal(chars)
       new(Regexp.escape(chars), CONCAT, [])
     end
 
-    # Create a regular expression from a raw string representing a
-    # regular expression.  The raw string should represent a regular
-    # expression with the highest level of precedence (you should use
-    # parenthesis if it is not).
+    # New regular expression constructed from a string representing a
+    # ruby regular expression.  The raw string should represent a
+    # regular expression with the highest level of precedence (you
+    # should use parenthesis if it is not).
     def self.raw(re_string)     # :no-doc:
       new(re_string, GROUPED, [])
     end
 
-    # Escape any special characters.
     def self.escape_any(chars)
+    # Escape special characters found in character classes.
       chars.gsub(/([\[\]\^\-])/) { "\\#{$1}" }
     end
   end
@@ -381,7 +403,7 @@ module Re
     # :call-seq:
     #   re.null
     #
-    # Matches the null string
+    # Regular expression that matches the null string
     def null
       self
     end
@@ -392,14 +414,16 @@ module Re
     #   re.any(range)
     #   re.any(chars, range, ...)
     #
-    # Match a character from the character class.
+    # Regular expression that matches a character from a character
+    # class.
     #
-    # Any without any arguments will match any single character.  Any
-    # with one or more arguments will construct a character class for
-    # the arguments.  If the argument is a three character string where
-    # the middle character is "-", then the argument represents a range
-    # of characters.  Otherwise the arguments are treated as a list of
-    # characters to be added to the character class.
+    # +Any+ without any arguments will match any single character.
+    # +Any+ with one or more arguments will construct a character
+    # class for the arguments.  If the argument is a three character
+    # string where the middle character is "-", then the argument
+    # represents a range of characters.  Otherwise the arguments are
+    # treated as a list of characters to be added to the character
+    # class.
     #
     # Examples:
     #
@@ -428,7 +452,8 @@ module Re
     # :call-seq:
     #   re.space
     #
-    # Matches any white space
+    # Regular expression that matches any white space character.
+    # (equivalent to /\s/)
     def space
       @space ||= Rexp.raw("\\s")
     end
@@ -436,7 +461,8 @@ module Re
     # :call-seq:
     #   re.spaces
     #
-    # Matches any white space
+    # Regular expression that matches any sequence of white space
+    # characters.  (equivalent to /\s+/)
     def spaces
       @spaces ||= space.one_or_more
     end
@@ -444,7 +470,8 @@ module Re
     # :call-seq:
     #   re.nonspace
     #
-    # Matches any non-white space
+    # Regular expression that matches any non-white space character.
+    # (equivalent to /\S/)
     def nonspace
       @nonspace ||= Rexp.raw("\\S")
     end
@@ -452,7 +479,8 @@ module Re
     # :call-seq:
     #   re.nonspaces
     #
-    # Matches any non-white space
+    # Regular expression that matches any sequence of non-white space
+    # characters.  (equivalent to /\S+/)
     def nonspaces
       @nonspaces ||= Rexp.raw("\\S").one_or_more
     end
@@ -460,7 +488,8 @@ module Re
     # :call-seq:
     #   re.word_char
     #
-    # Matches any sequence of word characters
+    # Regular expression that matches any word character.  (equivalent
+    # to /\w/)
     def word_char
       @word_char ||= Rexp.raw("\\w")
     end
@@ -468,7 +497,8 @@ module Re
     # :call-seq:
     #   re.word
     #
-    # Matches any sequence of word characters
+    # Regular expression that matches any sequence of word characters.
+    # (equivalent to /\w+/)
     def word
       @word ||= word_char.one_or_more
     end
@@ -476,7 +506,8 @@ module Re
     # :call-seq:
     #   re.break
     #
-    # Zero-length matches any break
+    # Regular expression that matches any break between word/non-word
+    # characters.  This is a zero length match.  (equivalent to /\b/)
     def break
       @break ||= Rexp.raw("\\b")
     end
@@ -484,7 +515,8 @@ module Re
     # :call-seq:
     #   re.digit
     #
-    # Matches a digit
+    # Regular expression that matches a single digit.  (equivalent to
+    # /\d/)
     def digit
       @digit ||= any("0-9")
     end
@@ -492,7 +524,8 @@ module Re
     # :call-seq:
     #   re.digits
     #
-    # Matches a sequence of digits
+    # Regular expression that matches a sequence of digits.
+    # (equivalent to /\d+/)
     def digits
       @digits ||= digit.one_or_more
     end
@@ -500,7 +533,8 @@ module Re
     # :call-seq:
     #   re.hex_digit
     #
-    # Matches a hex digit (upper or lower case)
+    # Regular expression that matches a single hex digit.  (equivalent
+    # to /[A-Fa-f0-9]/)
     def hex_digit
       @hex_digit ||= any("0-9", "a-f", "A-F")
     end
@@ -508,7 +542,8 @@ module Re
     # :call-seq:
     #   re.hex_digits
     #
-    # Matches a sequence of hex digits
+    # Regular expression that matches a sequence of hex digits
+    # (equivalent to /[A-Fa-f0-9]+/)
     def hex_digits
       @hex_digits ||= hex_digit.one_or_more
     end
