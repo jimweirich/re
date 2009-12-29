@@ -170,7 +170,9 @@ module Re
       md ? Result.new(md, self) : nil
     end
     alias =~ match
-    
+
+    # Map of names to capture indices.  Use this to lookup names in
+    # the the match data returned from a regular expression match.
     def name_map
       result = {}
       capture_keys.each_with_index do |key, i|
