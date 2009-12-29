@@ -102,7 +102,7 @@ module Re
     NUMBERS = [
       MAJOR = 0,
       MINOR = 0,
-      BUILD = 3,
+      BUILD = 4,
       BETA  = nil,
     ].compact
   end
