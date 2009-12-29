@@ -101,8 +101,8 @@ module Re
     NUMBERS = [
       MAJOR = 0,
       MINOR = 0,
-      BUILD = 2,
-      BETA  = 1,
+      BUILD = 3,
+      BETA  = nil,
     ].compact
   end
   VERSION = Version::NUMBERS.join('.')
