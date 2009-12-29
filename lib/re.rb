@@ -111,19 +111,19 @@ module Re
   # Re::Result captures the result of a match and allows lookup of the
   # captured groups by name.
   class Result
-    # Create a Re result object with the match data and the origina
+    # Create a Re result object with the match data and the original
     # Re::Rexp object.
     def initialize(match_data, rexp)
       @match_data = match_data
       @rexp = rexp
     end
     
-    # Return the full match
+    # Return the text of the full match.
     def full_match
       @match_data[0]
     end
     
-    # Return the named capture data.
+    # Return the text of the named capture data.
     def [](name)
       index = @rexp.capture_keys.index(name)
       index ? @match_data[index+1] : nil
