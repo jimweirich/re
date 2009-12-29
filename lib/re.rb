@@ -1,6 +1,6 @@
 #!/usr/bin/ruby -wKU
 #
-# = Regular Expression Construction.
+# = Regular Expression Construction
 #
 # Complex regular expressions are hard to construct and even harder to
 # read.  The Re library allows users to construct complex regular
@@ -39,7 +39,7 @@
 #   result.data(:month)  # => "01"
 #   result.data(:day)    # => "23"
 #
-# == Usage:
+# == Usage
 #
 #   include Re
 #
@@ -50,7 +50,7 @@
 #     puts "No Match"
 #   end
 #
-# == Examples:
+# == Examples
 #
 #   re("a")                -- matches "a"
 #   re("a") + re("b")      -- matches "ab"
@@ -82,7 +82,6 @@
 #
 # See Re.re, Re::Rexp, and Re::ConstructionMethods for details.
 #
-# == License and Copyright:
 #
 # == License and Copyright
 #
