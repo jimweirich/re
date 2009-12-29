@@ -156,24 +156,9 @@ module Re
       @options = options
     end
     
-    def string
-      if options == 0
-        @raw_string
-      else
-        "(?#{encode_options}:" + @raw_string + ")"
-      end
-    end
-    
-    # Encode the options into a string (e.g "", "m", "i", or "mi")
-    def encode_options          # :nodoc:
-      (multiline? ? "m" : "") +
-        (ignore_case? ? "i" : "")
-    end
-    private :encode_options
-
     # Return a Regexp from the the constructed regular expression.
     def regexp
-      @regexp ||= Regexp.new(string)
+      @regexp ||= Regexp.new(encoding)
     end
 
     # Does it match a string? (returns Re::Result if match, nil otherwise)
@@ -186,44 +171,44 @@ module Re
     # New regular expresion that matches the concatenation of self and
     # other.
     def +(other)
-      Rexp.new(parenthesize(CONCAT) + other.parenthesize(CONCAT),
+      Rexp.new(parenthesized_encoding(CONCAT) + other.parenthesized_encoding(CONCAT),
         CONCAT,
         capture_keys + other.capture_keys)
     end
 
     # New regular expresion that matches either self or other.
     def |(other)
-      Rexp.new(parenthesize(ALT) + "|" + other.parenthesize(ALT),
+      Rexp.new(parenthesized_encoding(ALT) + "|" + other.parenthesized_encoding(ALT),
         ALT,
         capture_keys + other.capture_keys)
     end
 
     # New regular expression where self is optional.
     def optional
-      Rexp.new(parenthesize(POSTFIX) + "?", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + "?", POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self many (zero or more)
     # times.
     def many
-      Rexp.new(parenthesize(POSTFIX) + "*", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + "*", POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self many (zero or more)
     # times (non-greedy version).
     def many!
-      Rexp.new(parenthesize(POSTFIX) + "*?", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + "*?", POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self one or more times.
     def one_or_more
-      Rexp.new(parenthesize(POSTFIX) + "+", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + "+", POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self one or more times
     # (non-greedy version).
     def one_or_more!
-      Rexp.new(parenthesize(POSTFIX) + "+?", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + "+?", POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self between +min+ and +max+
@@ -231,20 +216,20 @@ module Re
     # exactly exactly +min+ times.
     def repeat(min, max=nil)
       if min && max
-        Rexp.new(parenthesize(POSTFIX) + "{#{min},#{max}}", POSTFIX, capture_keys)
+        Rexp.new(parenthesized_encoding(POSTFIX) + "{#{min},#{max}}", POSTFIX, capture_keys)
       else
-        Rexp.new(parenthesize(POSTFIX) + "{#{min}}", POSTFIX, capture_keys)
+        Rexp.new(parenthesized_encoding(POSTFIX) + "{#{min}}", POSTFIX, capture_keys)
       end
     end
 
     # New regular expression that matches self at least +min+ times.
     def at_least(min)
-      Rexp.new(parenthesize(POSTFIX) + "{#{min},}", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + "{#{min},}", POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self at most +max+ times.
     def at_most(max)
-      Rexp.new(parenthesize(POSTFIX) + "{0,#{max}}", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + "{0,#{max}}", POSTFIX, capture_keys)
     end
 
     # New regular expression that matches a single character that is
@@ -267,29 +252,29 @@ module Re
 
     # New regular expression that matches self at the beginning of a line.
     def bol
-      Rexp.new("^" + parenthesize(CONCAT), CONCAT, capture_keys)
+      Rexp.new("^" + parenthesized_encoding(CONCAT), CONCAT, capture_keys)
     end
 
     # New regular expression that matches self at the end of the line.
     def eol
-      Rexp.new(parenthesize(CONCAT) + "$", CONCAT, capture_keys)
+      Rexp.new(parenthesized_encoding(CONCAT) + "$", CONCAT, capture_keys)
     end
 
     # New regular expression that matches self at the beginning of a string.
     def begin
-      Rexp.new("\\A" + parenthesize(CONCAT), CONCAT, capture_keys)
+      Rexp.new("\\A" + parenthesized_encoding(CONCAT), CONCAT, capture_keys)
     end
 
     # New regular expression that matches self at the end of a string
     # (trailing new lines are allowed to not match).
     def end
-      Rexp.new(parenthesize(CONCAT) + "\\Z", CONCAT, capture_keys)
+      Rexp.new(parenthesized_encoding(CONCAT) + "\\Z", CONCAT, capture_keys)
     end
 
     # New regular expression that matches self at the very end of a string
     # (trailing new lines are required to match).
     def very_end
-      Rexp.new(parenthesize(CONCAT) + "\\z", CONCAT, capture_keys)
+      Rexp.new(parenthesized_encoding(CONCAT) + "\\z", CONCAT, capture_keys)
     end
 
     # New expression that matches self across an entire line.
@@ -302,14 +287,14 @@ module Re
     # automatically, so this method shouldn't be needed by client
     # software for normal operations.
     def group
-      Rexp.new("(?:" + string + ")", GROUPED, capture_keys)
+      Rexp.new("(?:" + encoding + ")", GROUPED, capture_keys)
     end
 
     # New regular expression that captures text matching self.  The
     # matching text may be retrieved from the Re::Result object using
     # the +name+ (a symbol) as the keyword.
     def capture(name)
-      Rexp.new("(" + string + ")", GROUPED, [name] + capture_keys)
+      Rexp.new("(" + encoding + ")", GROUPED, [name] + capture_keys)
     end
     
     # New regular expression that matches self in multiline mode.
@@ -349,15 +334,31 @@ module Re
     # If the precedence of the current Regexp is less than the new
     # precedence level, return the encoding wrapped in a non-capturing
     # group.  Otherwise just return the encoding.
+    def parenthesized_encoding(new_level)
       if level >= new_level
-        string
+        encoding
       else
-        group.string
+        group.encoding
       end
     end
     
     # The string encoding of current regular expression.  The encoding
     # will include option flags if specified.
+    def encoding
+      if options == 0
+        @raw_string
+      else
+        "(?#{encode_options}:" + @raw_string + ")"
+      end
+    end
+    
+    # Encode the options into a string (e.g "", "m", "i", or "mi")
+    def encode_options          # :nodoc:
+      (multiline? ? "m" : "") +
+        (ignore_case? ? "i" : "")
+    end
+    private :encode_options
+
     # New regular expression that matches the literal characters in
     # +chars+.  For example, Re.literal("a(b)") will be equivalent to
     # /a\(b\)/.  Note that characters with special meanings in regular
@@ -374,8 +375,8 @@ module Re
       new(re_string, GROUPED, [])
     end
 
-    def self.escape_any(chars)
     # Escape special characters found in character classes.
+    def self.escape_any(chars)  # :nodoc:
       chars.gsub(/([\[\]\^\-])/) { "\\#{$1}" }
     end
   end
