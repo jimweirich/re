@@ -232,12 +232,6 @@ module Re
       Rexp.new(parenthesized_encoding(POSTFIX) + "{0,#{max}}", POSTFIX, capture_keys)
     end
 
-    # New regular expression that matches a single character that is
-    # not in the given set of characters.
-    def none(chars)
-      Rexp.new("[^" + Rexp.escape_any(chars) + "]", GROUPED, [])
-    end
-
     # New regular expression that matches self across the complete
     # string.
     def all
@@ -450,6 +444,12 @@ module Re
       end
     end
     
+    # New regular expression that matches a single character that is
+    # not in the given set of characters.
+    def none(chars)
+      Rexp.new("[^" + Rexp.escape_any(chars) + "]", GROUPED, [])
+    end
+
     # :call-seq:
     #   re.space
     #
