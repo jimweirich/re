@@ -422,11 +422,12 @@ module Re
     #
     # Examples:
     #
-    #   re.any                            -- match any character
-    #   re.any("aieouy")                  -- match vowels
-    #   re.any("0-9")                     -- match digits
-    #   re.any("A-Z", "a-z", "0-9")       -- match alphanumerics
-    #   re.any("A-Z", "a-z", "0-9", "_")  -- match alphanumerics
+    #   re.any                            -- matches any character
+    #   re.any("aieouy")                  -- matches vowels
+    #   re.any("0-9")                     -- matches digits
+    #   re.any("A-Z", "a-z", "0-9")       -- matches alphanumerics
+    #   re.any("A-Z", "a-z", "0-9", "_")  -- matches alphanumerics
+    #                                        plus an underscore
     #
     def any(*chars)
       if chars.empty?
@@ -444,10 +445,37 @@ module Re
       end
     end
     
-    # New regular expression that matches a single character that is
-    # not in the given set of characters.
-    def none(chars)
-      Rexp.new("[^" + Rexp.escape_any(chars) + "]", GROUPED, [])
+    # :call-seq:
+    #   re.none(chars)
+    #   re.none(range)
+    #   re.none(chars, range, ...)
+    #
+    # Regular expression that matches a character not in a character
+    # class.
+    #
+    # +None+ with one or more arguments will construct a character
+    # class for the given arguments.  If the argument is a three
+    # character string where the middle character is "-", then the
+    # argument represents a range of characters.  Otherwise the
+    # arguments are treated as a list of characters to be added to the
+    # character class.
+    #
+    # Examples:
+    #
+    #   re.none("aieouy")                 -- matches non-vowels
+    #   re.any("0-9")                     -- matches non-digits
+    #   re.any("A-Z", "a-z", "0-9")       -- matches non-alphanumerics
+    #
+    def none(*chars)
+      any_chars = ''
+      chars.each do |chs|
+        if /^.-.$/ =~ chs
+          any_chars << chs
+        else
+          any_chars << Rexp.escape_any(chs)
+        end
+      end
+      Rexp.new("[^" + any_chars  + "]", GROUPED, [])
     end
 
     # :call-seq:

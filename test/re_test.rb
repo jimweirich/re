@@ -193,17 +193,17 @@ class ReTest < Test::Unit::TestCase
     assert r =~ "]"
   end
   
-  def test_range_of_chars
+  def test_any_with_a_range_of_chars
     r = re.any("a-z").many.all
     assert r =~ "abcdefghijklmnopqrstuvwxyz"
   end
 
-  def test_range_and_mix_of_chars
+  def test_any_with_a_range_and_mix_of_chars
     r = re.any("0-9", ".-").many.all
     assert r =~ "-12.3"
   end
 
-  def test_none
+  def test_none_with_a_character_list
     r = re.none("xyz").all
     assert r =~ "w"
     assert r !~ "x"
@@ -223,6 +223,22 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "]"
   end
   
+  def test_none_with_a_range_of_chars
+    r = re.none("a-z").many.all
+    assert r =~ "0123()$#"
+    assert r !~ "a"
+    assert r !~ "b"
+    assert r !~ "z"
+  end
+
+  def test_none_with_a_range_and_mix_of_chars
+    r = re.none("0-9", ".-").many.all
+    assert r =~ "abc%^&"
+    assert r !~ "-"
+    assert r !~ "."
+    assert r !~ "1"
+  end
+
   def test_all
     r = re("a").all
     assert r =~ "a"
