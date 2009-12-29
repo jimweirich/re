@@ -471,7 +471,7 @@ class ReTest < Test::Unit::TestCase
   class << self
     include Re
     def date_re
-      # (19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])
+      # /\A((?:19|20)[0-9]{2})[\- \/.](0[1-9]|1[012])[\- \/.](0[1-9]|[12][0-9]|3[01])\z/
       @date_re ||=
         begin
           delim_re                = re.any("- /.")
