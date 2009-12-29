@@ -128,8 +128,15 @@ module Re
     
     # Return the text of the named capture data.
     def [](name)
-      index = @rexp.capture_keys.index(name)
-      index ? @match_data[index+1] : nil
+      index = name_map[name]
+      index ? @match_data[index] : nil
+    end
+
+    private
+
+    # Lazy eval map of names to capture indices.
+    def name_map
+      @name_map ||= @rexp.name_map
     end
   end
 
