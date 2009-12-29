@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+# Copyright 2009 by Jim Weirich (jim.weirich@gmail.com).
+# All rights reserved.
+#
+# Re is provided under the MIT open source license (see MIT-LICENSE)
+
 require 'test/unit'
 require 're'
 

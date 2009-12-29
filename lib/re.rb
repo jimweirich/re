@@ -84,7 +84,10 @@
 #
 # == License and Copyright:
 #
-# Copyright 2009 by Jim Weirich (jim.weirich@gmail.com)
+# == License and Copyright
+#
+# Copyright 2009 by Jim Weirich (jim.weirich@gmail.com).
+# All rights Reserved.
 #
 # Re is provided under the MIT open source license (see MIT-LICENSE)
 #
