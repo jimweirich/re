@@ -402,7 +402,7 @@ module Re
     
     protected
 
-    # String representation with grouping if needed.
+    # String encoding with grouping if needed.
     #
     # If the precedence of the current Regexp is less than the new
     # precedence level, return the encoding wrapped in a non-capturing
