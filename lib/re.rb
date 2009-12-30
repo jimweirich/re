@@ -536,8 +536,8 @@ module Re
     # Examples:
     #
     #   re.none("aieouy")                 -- matches non-vowels
-    #   re.any("0-9")                     -- matches non-digits
-    #   re.any("A-Z", "a-z", "0-9")       -- matches non-alphanumerics
+    #   re.none("0-9")                    -- matches non-digits
+    #   re.none("A-Z", "a-z", "0-9")      -- matches non-alphanumerics
     #
     def none(*chars)
       Rexp.new("[^" + char_class(chars)  + "]", GROUPED, [])
