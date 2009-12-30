@@ -121,8 +121,8 @@
 # If regular expression performance is a premium in your application,
 # then you can still use Re to construct the regular expression and
 # extract the raw Ruby Regexp object to be used for the actual
-# matching.  You lose the ability to use named capture groups, but you
-# get raw Ruby regular expression matching performance.
+# matching.  You lose the ability to use named capture groups easily,
+# but you get raw Ruby regular expression matching performance.
 #
 # For example, if you wanted to use the raw regular expression from
 # PHONE_RE defined above, you could extract the regular expression
