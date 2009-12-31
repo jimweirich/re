@@ -64,7 +64,7 @@ class ReTest < Test::Unit::TestCase
   end
 
   def test_non_greedy_many
-    r =  re.any.many!.capture(:x) + re("b")
+    r =  re.any.non_greedy.many.capture(:x) + re("b")
     result = r.match("xbxb")
     assert result
     assert_equal "x", result[:x]
@@ -85,7 +85,7 @@ class ReTest < Test::Unit::TestCase
   end
   
   def test_non_greedy_one_or_more
-    r = re.any.one_or_more!.capture(:any) + re("b")
+    r = re.any.non_greedy.one_or_more.capture(:any) + re("b")
     result = r.match("xbxb")
     assert result
     assert_equal "x", result[:any]
@@ -107,11 +107,35 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "aaaaa"
   end
 
+  def test_repeat_greedy
+    r = re("a").repeat(2, 4)
+    result = r =~ "aaaaa"
+    assert_equal "aaaa", result.full_match
+  end
+
+  def test_repeat_non_greedy
+    r = re("a").non_greedy.repeat(2, 4)
+    result = r =~ "aaaaa"
+    assert_equal "aa", result.full_match
+  end
+
   def test_at_least
     r = re("a").at_least(2).all
     assert r !~ "a"
     assert r =~ "aa"
     assert r =~ "aaaaaaaaaaaaaaaaaaaa"
+  end
+
+  def test_at_least_greedy
+    r = re("a").at_least(2)
+    result =  r =~ "aaaa"
+    assert_equal "aaaa", result.full_match
+  end
+
+  def test_at_least_non_greedy
+    r = re("a").non_greedy.at_least(2)
+    result =  r =~ "aaa"
+    assert_equal "aa", result.full_match
   end
 
   def test_at_most
@@ -122,6 +146,24 @@ class ReTest < Test::Unit::TestCase
     assert r =~ "aaa"
     assert r =~ "aaaa"
     assert r !~ "aaaaa"
+  end
+  
+  def test_at_most_greedy
+    r = re("a").at_most(4)
+    result = r =~ "aaaa"
+    assert_equal "aaaa", result.full_match
+  end
+  
+  def test_at_most_non_greedy
+    r = re("a").non_greedy.at_most(4)
+    result = r =~ "aaaa"
+    if RUBY_VERSION < "1.9"
+      # Ruby 1.8.x seems to have a bug where non-greedy matches with
+      # intervals match at least one character.
+      assert_equal "a", result.full_match
+    else
+      assert_equal "", result.full_match
+    end
   end
   
   def test_optional

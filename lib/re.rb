@@ -223,13 +223,9 @@ module Re
       @level = level
       @capture_keys = keys
       @options = options
+      @greedy = true
     end
     
-    # Return a Regexp from the the constructed regular expression.
-    def regexp
-      @regexp ||= Regexp.new(encoding)
-    end
-
     # Does it match a string?  Returns Re::Result if match, nil
     # otherwise.
     def match(string)
@@ -238,6 +234,17 @@ module Re
     end
     alias =~ match
 
+    # Return a Regexp from the the constructed regular expression.
+    def regexp
+      @regexp ||= Regexp.new(encoding)
+    end
+
+    # Is the current regular expression marked to be treated as greedy
+    # when repeat operators are applied?
+    def greedy?
+      @greedy
+    end
+    
     # Map of names to capture indices.  Use this to lookup names in
     # the the match data returned from a regular expression match.
     def name_map
@@ -256,7 +263,7 @@ module Re
         capture_keys + other.capture_keys)
     end
 
-    # New regular expresion that matches either self or other.
+    # New regular expression that matches either self or other.
     def |(other)
       Rexp.new(parenthesized_encoding(ALT) + "|" + other.parenthesized_encoding(ALT),
         ALT,
@@ -267,28 +274,26 @@ module Re
     def optional
       Rexp.new(parenthesized_encoding(POSTFIX) + "?", POSTFIX, capture_keys)
     end
+    
+    # Mark the current regular expression with the non-greedy flag.
+    # Repeats applied to this regular expression will be treated as
+    # non-greedy repeats.  Note that +non_greedy has no effect unless
+    # immediately followed by +many+, +one_or_more+, +repeat+,
+    # +at_least+ or +at_most+.
+    def non_greedy
+      @greedy = false
+      self
+    end
 
     # New regular expression that matches self many (zero or more)
     # times.
     def many
-      Rexp.new(parenthesized_encoding(POSTFIX) + "*", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + greedy("*"), POSTFIX, capture_keys)
     end
-
-    # New regular expression that matches self many (zero or more)
-    # times (non-greedy version).
-    def many!
-      Rexp.new(parenthesized_encoding(POSTFIX) + "*?", POSTFIX, capture_keys)
-    end
-
+    
     # New regular expression that matches self one or more times.
     def one_or_more
-      Rexp.new(parenthesized_encoding(POSTFIX) + "+", POSTFIX, capture_keys)
-    end
-
-    # New regular expression that matches self one or more times
-    # (non-greedy version).
-    def one_or_more!
-      Rexp.new(parenthesized_encoding(POSTFIX) + "+?", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + greedy("+"), POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self between +min+ and +max+
@@ -296,7 +301,7 @@ module Re
     # exactly exactly +min+ times.
     def repeat(min, max=nil)
       if min && max
-        Rexp.new(parenthesized_encoding(POSTFIX) + "{#{min},#{max}}", POSTFIX, capture_keys)
+        Rexp.new(parenthesized_encoding(POSTFIX) + greedy("{#{min},#{max}}"), POSTFIX, capture_keys)
       else
         Rexp.new(parenthesized_encoding(POSTFIX) + "{#{min}}", POSTFIX, capture_keys)
       end
@@ -304,12 +309,12 @@ module Re
 
     # New regular expression that matches self at least +min+ times.
     def at_least(min)
-      Rexp.new(parenthesized_encoding(POSTFIX) + "{#{min},}", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + greedy("{#{min},}"), POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self at most +max+ times.
     def at_most(max)
-      Rexp.new(parenthesized_encoding(POSTFIX) + "{0,#{max}}", POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + greedy("{0,#{max}}"), POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self across the complete
@@ -402,6 +407,12 @@ module Re
     end
     
     protected
+
+    # Return the repeat op in either greedy or non-greedy form, as
+    # determined by the greedy flag on the current regular expression.
+    def greedy(op)
+      greedy? ? op : "#{op}?"
+    end
 
     # String encoding with grouping if needed.
     #
