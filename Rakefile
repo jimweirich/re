@@ -19,8 +19,9 @@ namespace "release" do
     :readme,
     :check_non_beta,
     :check_all_committed,
-    :gem,
-    "publish:rdoc"
+    :tag_version,
+    "publish:rdoc",
+    "publish:gem",
   ]
   
   task :check_all_committed do
@@ -32,6 +33,17 @@ namespace "release" do
   
   task :commit_new_version do
     sh "git commit -m 'bumped to version #{Re::VERSION}'"
+  end
+  
+  task :not_already_tagged do
+    if `git tag -l re-#{Re::VERSION}` != ""
+      fail "Already tagged with re-#{Re::VERSION}"
+    end
+  end
+
+  task :tag_version => :not_already_tagged do
+    sh "git tag re-#{Re::VERSION}"
+    sh "git push --tags"
   end
   
   task :check_non_beta do
