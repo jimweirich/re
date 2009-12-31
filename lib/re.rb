@@ -230,7 +230,8 @@ module Re
       @regexp ||= Regexp.new(encoding)
     end
 
-    # Does it match a string? (returns Re::Result if match, nil otherwise)
+    # Does it match a string?  Returns Re::Result if match, nil
+    # otherwise.
     def match(string)
       md = regexp.match(string)
       md ? Result.new(md, self) : nil
@@ -247,8 +248,8 @@ module Re
       result
     end
 
-    # New regular expresion that matches the concatenation of self and
-    # other.
+    # New regular expression that matches the concatenation of self
+    # and other.
     def +(other)
       Rexp.new(parenthesized_encoding(CONCAT) + other.parenthesized_encoding(CONCAT),
         CONCAT,
