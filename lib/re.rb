@@ -165,7 +165,7 @@ module Re
       MAJOR = 0,
       MINOR = 0,
       BUILD = 5,
-      BETA  = nil,
+      BETA  = 1,
     ].compact
   end
   VERSION = Version::NUMBERS.join('.')
