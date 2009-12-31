@@ -24,6 +24,10 @@ namespace "release" do
   ]
   
   task :check_all_committed do
+    status = `git status`
+    unless status =~ /nothing to commit/
+      fail "Outstanding Git Changes:\n#{status}"
+    end
   end
   
   task :commit_new_version do
