@@ -16,12 +16,15 @@ end
 
 namespace "release" do
   task :new => [
-    :check_non_beta,
     :readme,
-    :commit_new_version,
+    :check_non_beta,
+    :check_all_committed,
     :gem,
     "publish:rdoc"
   ]
+  
+  task :check_all_committed do
+  end
   
   task :commit_new_version do
     sh "git commit -m 'bumped to version #{Re::VERSION}'"
