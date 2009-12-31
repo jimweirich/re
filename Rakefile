@@ -14,8 +14,21 @@ Rake::TestTask.new(:test) do |t|
   t.test_files = FileList['test/*_test.rb']
 end
 
-task :release => [:check_non_beta, :readme, :gem, "publish:rdoc"]
-
-task :check_non_beta do
-  fail "Must not be a beta version! Version is #{Re::VERSION}" if Re::Version::BETA
+namespace "release" do
+  task :new => [
+    :check_non_beta,
+    :readme,
+    :commit_new_version,
+    :gem,
+    "publish:rdoc"
+  ]
+  
+  task :commit_new_version do
+    sh "git commit -m 'bumped to version #{Re::VERSION}'"
+  end
+  
+  task :check_non_beta do
+    fail "Must not be a beta version! Version is #{Re::VERSION}" if Re::Version::BETA
+  end
 end
+task :release => "release:new"
