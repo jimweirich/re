@@ -12,6 +12,11 @@ begin
     task :rdoc => ["rake:rdoc"] do
       publisher.upload
     end
+    
+    desc "Publish gem re-#{Re::VERSION} to Gem Cutter"
+    task :gem => "rake:gem" do
+      sh "gem push pkg/re-#{Re::VERSION}.gem"
+    end
   end
 
 rescue LoadError => ex
