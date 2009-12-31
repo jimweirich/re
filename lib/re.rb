@@ -35,9 +35,9 @@
 # groups can be retrieved by name:
 #
 #   result = date.match("2009-01-23")
-#   result.data(:year)   # => "2009"
-#   result.data(:month)  # => "01"
-#   result.data(:day)    # => "23"
+#   result[:year]      # => "2009"
+#   result[:month]     # => "01"
+#   result[:day]       # => "23"
 #
 # == Usage
 #
