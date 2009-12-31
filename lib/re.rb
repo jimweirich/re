@@ -288,12 +288,12 @@ module Re
     # New regular expression that matches self many (zero or more)
     # times.
     def many
-      Rexp.new(parenthesized_encoding(POSTFIX) + greedy("*"), POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + apply_greedy("*"), POSTFIX, capture_keys)
     end
     
     # New regular expression that matches self one or more times.
     def one_or_more
-      Rexp.new(parenthesized_encoding(POSTFIX) + greedy("+"), POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + apply_greedy("+"), POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self between +min+ and +max+
@@ -301,7 +301,7 @@ module Re
     # exactly exactly +min+ times.
     def repeat(min, max=nil)
       if min && max
-        Rexp.new(parenthesized_encoding(POSTFIX) + greedy("{#{min},#{max}}"), POSTFIX, capture_keys)
+        Rexp.new(parenthesized_encoding(POSTFIX) + apply_greedy("{#{min},#{max}}"), POSTFIX, capture_keys)
       else
         Rexp.new(parenthesized_encoding(POSTFIX) + "{#{min}}", POSTFIX, capture_keys)
       end
@@ -309,12 +309,12 @@ module Re
 
     # New regular expression that matches self at least +min+ times.
     def at_least(min)
-      Rexp.new(parenthesized_encoding(POSTFIX) + greedy("{#{min},}"), POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + apply_greedy("{#{min},}"), POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self at most +max+ times.
     def at_most(max)
-      Rexp.new(parenthesized_encoding(POSTFIX) + greedy("{0,#{max}}"), POSTFIX, capture_keys)
+      Rexp.new(parenthesized_encoding(POSTFIX) + apply_greedy("{0,#{max}}"), POSTFIX, capture_keys)
     end
 
     # New regular expression that matches self across the complete
@@ -410,7 +410,7 @@ module Re
 
     # Return the repeat op in either greedy or non-greedy form, as
     # determined by the greedy flag on the current regular expression.
-    def greedy(op)
+    def apply_greedy(op)
       greedy? ? op : "#{op}?"
     end
 
