@@ -40,7 +40,7 @@ groups can be retrieved by name:
 
 == Version
 
-This document describes Re version 0.0.4.1.
+This document describes Re version 0.0.5.
 
 == Usage
 

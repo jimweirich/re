@@ -164,8 +164,8 @@ module Re
     NUMBERS = [
       MAJOR = 0,
       MINOR = 0,
-      BUILD = 4,
-      BETA  = 1,
+      BUILD = 5,
+      BETA  = nil,
     ].compact
   end
   VERSION = Version::NUMBERS.join('.')
