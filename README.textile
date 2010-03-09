@@ -1,17 +1,17 @@
-<i>Regular Expressions are hard!  Let's go shopping.</i>
+h1. Regular Expression Construction
 
-= Regular Expression Construction
+bq. _Regular Expressions are hard!  Let's go shopping._
 
-Complex regular expressions are hard to construct and even harder to
-read.  The Re library allows users to construct complex regular
+p. Complex regular expressions are hard to construct and even harder
+to read.  The Re library allows users to construct complex regular
 expressions from simpler expressions.  For example, consider the
 following regular expression that will parse dates:
 
    /\A((?:19|20)[0-9]{2})[\- \/.](0[1-9]|1[012])[\- \/.](0[1-9]|[12][0-9]|3[01])\z/
 
-Using the Re library, that regular expression can be built
-incrementaly from smaller, easier to understand expressions.
-Perhaps something like this:
+p. Using the Re library, that regular expression can be built
+incrementaly from smaller, easier to understand expressions.  Perhaps
+something like this:
 
   require 're'
 
@@ -30,7 +30,7 @@ Perhaps something like this:
          
   date = (year + delim + month + delim + day).all
 
-Although it is more code, the individual pieces are smaller and
+p. Although it is more code, the individual pieces are smaller and
 easier to independently verify.  As an additional bonus, the capture
 groups can be retrieved by name:
 
@@ -39,11 +39,11 @@ groups can be retrieved by name:
   result[:month]     # => "01"
   result[:day]       # => "23"
 
-== Version
+h2. Version
 
 This document describes Re version 0.0.5.1.
 
-== Usage
+h2. Usage
 
   include Re
 
@@ -54,7 +54,7 @@ This document describes Re version 0.0.5.1.
     puts "No Match"
   end
 
-== Examples
+h2. Examples
 
   re("a")                -- matches "a"
   re("a") + re("b")      -- matches "ab"
@@ -86,7 +86,7 @@ and character class functions.
 
 See Re.re, Re::Rexp, and Re::ConstructionMethods for details.
 
-== Performance
+h2. Performance
 
 We should say a word or two about performance.
 
@@ -146,14 +146,14 @@ wanted named capture groups, you can something like this:
   match_data = PHONE_REGEXP.match(string)
   area_code = match_data[PHONE_RE.name_map[:area]]
 
-== License and Copyright
+h2. License and Copyright
 
 Copyright 2009 by Jim Weirich (jim.weirich@gmail.com).
 All rights Reserved.
 
 Re is provided under the MIT open source license (see MIT-LICENSE)
 
-== Links:
+h2. Links:
 
 Documentation :: http://re-lib.rubyforge.org
 Source        :: http://github.com/jimweirich/re
