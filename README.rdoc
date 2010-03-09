@@ -1,6 +1,6 @@
 = Regular Expression Construction
 
-  <i>Regular Expressions are hard!  Let's go shopping.</i>
+<blockquote><i>Regular Expressions are hard!  Let's go shopping.</i></blockquote>
 
 Complex regular expressions are hard to construct and even harder to
 read.  The Re library allows users to construct complex regular
