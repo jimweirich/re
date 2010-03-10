@@ -516,11 +516,11 @@ module Re
     # Examples:
     #
     #   re.any                            -- matches any character
-    #   re.any("aieouy")                  -- matches vowels
-    #   re.any("0-9")                     -- matches digits
-    #   re.any("A-Z", "a-z", "0-9")       -- matches alphanumerics
-    #   re.any("A-Z", "a-z", "0-9", "_")  -- matches alphanumerics
-    #                                        plus an underscore
+    #   re.any("aieouy")                  -- matches any vowel
+    #   re.any("0-9")                     -- matches any digit
+    #   re.any("A-Z", "a-z", "0-9")       -- matches any alphanumeric character
+    #   re.any("A-Z", "a-z", "0-9", "_")  -- matches any alphanumeric character
+    #                                        or an underscore
     #
     def any(*chars)
       if chars.empty?
