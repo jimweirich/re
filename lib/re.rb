@@ -637,7 +637,7 @@ module Re
     # Regular expression that matches a single digit.  (equivalent to
     # /\d/)
     def digit
-      @digit ||= any("0-9")
+      @digit ||= Rexp.raw("\\d")
     end
     
     # :call-seq:
