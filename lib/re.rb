@@ -173,6 +173,8 @@ module Re
   # Re::Result captures the result of a match and allows lookup of the
   # captured groups by name.
   class Result
+    include Enumerable
+
     # Create a Re result object with the match data and the original
     # Re::Rexp object.
     def initialize(match_data, rexp)
@@ -189,6 +191,20 @@ module Re
     def [](name)
       index = name_map[name]
       index ? @match_data[index] : nil
+    end
+
+    def keys
+      name_map.keys.sort_by { |k| name_map[k] }
+    end
+    
+    def values
+      keys.map { |k| self[k] }
+    end
+
+    def each
+      keys.each do |k|
+        yield([k, self[k]])
+      end
     end
 
     private

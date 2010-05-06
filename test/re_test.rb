@@ -8,6 +8,40 @@
 require 'test/unit'
 require 're'
 
+class ReResultTeset < Test::Unit::TestCase
+  include Re
+  extend Re
+  
+  PATTERN = re.any("a-z").one_or_more.capture(:alphas) + re.digits.capture(:digits)
+  
+  def setup
+    @result = PATTERN.match("<abc123>")
+  end
+  
+  def test_result_has_full_match
+    assert_equal "abc123", @result.full_match
+  end
+
+  def test_result_has_individual_matches
+    assert_equal "abc", @result[:alphas]
+    assert_equal "123", @result[:digits]
+  end
+
+  def test_result_has_capture_keys
+    assert_equal [:alphas, :digits], @result.keys
+  end
+
+  def test_result_has_capture_values
+    assert_equal ["abc", "123"], @result.values
+  end
+
+  def test_result_can_be_enumerated
+    assert_equal [[:alphas, "abc"], [:digits, "123"]], @result.map {
+      |item| item
+    }
+  end
+end
+
 class ReTest < Test::Unit::TestCase
   include Re
 
