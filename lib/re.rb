@@ -52,6 +52,8 @@
 #
 # == Examples
 #
+# === Simple Examples
+#
 #   re("a")                -- matches "a"
 #   re("a") + re("b")      -- matches "ab"
 #   re("a") | re("b")      -- matches "a" or "b"
@@ -81,6 +83,52 @@
 # and character class functions.
 #
 # See Re.re, Re::Rexp, and Re::ConstructionMethods for details.
+#
+# === regexml Example
+#
+# Regexml is an XML based language to express regular expressions.
+# Here is their example for matching URLs.
+#
+#     <regexml xmlns="http://schemas.regexml.org/expressions">
+#         <expression id="url">
+#             <start/>
+#             <match equals="[A-Za-z]" max="*" capture="true"/> <!-- scheme (e.g., http) -->
+#             <match equals=":"/>
+#             <match equals="//" min="0"/> <!-- mailto: and news: URLs do not require forward slashes -->
+#             <match equals="[0-9.\-A-Za-z@]" max="*" capture="true"/> <!-- domain (e.g., www.regexml.org) -->
+#             <group min="0">
+#                 <match equals=":"/>
+#                 <match equals="\d" max="5" capture="true"/> <!-- port number -->
+#             </group>
+#             <group min="0" capture="true"> <!-- resource (e.g., /sample/resource) -->
+#                 <match equals="/"/>
+#                 <match except="[?#]" max="*"/>
+#             </group>
+#             <group min="0">
+#                 <match equals="?"/>
+#                 <match except="#" min="0" max="*" capture="true"/> <!-- query string -->
+#             </group>
+#             <group min="0">
+#                 <match equals="#"/>
+#                 <match equals="." min="0" max="*" capture="true"/> <!-- anchor tag -->
+#             </group>
+#             <end/>
+#         </expression>
+#     </regexml>
+#
+# Here is the Re expression to match URLs:
+#
+#     URL_PATTERN =
+#       re.any("A-Z", "a-z").one_or_more.capture(:scheme) +
+#       re(":") +
+#       re("//").optional +
+#       re.any("0-9", "A-Z", "a-z", "-@.").one_or_more.capture(:host) +
+#       (re(":") + re.digit.repeat(1,5).capture(:port)).optional +
+#       (re("/") + re.none("?#").many).capture(:path).optional +
+#       (re("?") + re.none("#").many.capture(:query)).optional +
+#       (re("#") + re.any.many.capture(:anchor)).optional
+#
+#     URL_RE = URL_PATTERN.all
 #
 # == Performance
 #
