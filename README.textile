@@ -13,7 +13,8 @@ Using the Re library, that regular expression can be built
 incrementaly from smaller, easier to understand expressions.
 Perhaps something like this:
 
-  require 're'
+<pre>
+ require 're'
 
   include Re
 
@@ -29,15 +30,18 @@ Perhaps something like this:
   day = (under_ten | ten_and_under_thirty | thirties).capture(:day)
          
   date = (year + delim + month + delim + day).all
+</pre>
 
 Although it is more code, the individual pieces are smaller and
 easier to independently verify.  As an additional bonus, the capture
 groups can be retrieved by name:
 
+<pre>
   result = date.match("2009-01-23")
   result[:year]      # => "2009"
   result[:month]     # => "01"
   result[:day]       # => "23"
+</pre>
 
 h2. Version
 
@@ -45,6 +49,7 @@ This document describes Re version 0.0.6.
 
 h2. Usage
 
+<pre>
   include Re
 
   number = re.any("0-9").all
@@ -53,9 +58,11 @@ h2. Usage
   else
     puts "No Match"
   end
+</pre>
 
 h2. Examples
 
+<pre>
   re("a")                -- matches "a"
   re("a") + re("b")      -- matches "ab"
   re("a") | re("b")      -- matches "a" or "b"
@@ -63,23 +70,28 @@ h2. Examples
   re("a").one_or_more    -- matches "a", "aaaaaa", but not ""
   re("a").optional       -- matches "" or "a"
   re("a").all            -- matches "a", but not "xab"
+</pre>
 
 See Re::Rexp for a complete list of expressions.
 
 Using re without an argument allows access to a number of common
 regular expression constants.  For example:
 
+<pre>
   re.space / re.spaces  -- matches " ", "\n" or "\t"
   re.digit / re.digits  -- matches a digit / sequence of digits
+</pre>
 
 Also, re without arguments can also be used to construct character
 classes:
 
+<pre>
   re.any                -- Matches any charactor
   re.any("abc")         -- Matches "a", "b", or "c"
   re.any("0-9")         -- Matches the digits 0 through 9
   re.any("A-Z", "a-z", "0-9", "_")
                         -- Matches alphanumeric or an underscore
+</pre>
 
 See Re::ConstructionMethods for a complete list of common constants
 and character class functions.
@@ -96,15 +108,18 @@ regular expression once and reuse it as needed.  This means you
 won't do a lot of inline expressions using Re, but rather assign the
 generated Re regular expression to a constant.  For example:
 
+<pre>
   PHONE_RE = re.digit.repeat(3).capture(:area) +
                re("-") + 
                re.digit.repeat(3).capture(:exchange) +
                re("-") +
                re.digit.repeat(4)).capture(:subscriber)
+</pre>
 
 Alternatively, you can arrange for the regular expression to be
 constructed only when actually needed.  Something like:q
 
+<pre>
   def phone_re
     @phone_re ||= re.digit.repeat(3).capture(:area) +
                     re("-") + 
@@ -112,6 +127,7 @@ constructed only when actually needed.  Something like:q
                     re("-") +
                     re.digit.repeat(4)).capture(:subscriber)
   end
+</pre>
 
 That method constructs the phone number regular expression once and
 returns a cached value thereafter.  Just make sure you put the
@@ -132,19 +148,25 @@ For example, if you wanted to use the raw regular expression from
 PHONE_RE defined above, you could extract the regular expression
 like this:
 
+<pre>
   PHONE_REGEXP = PHONE_RE.regexp
+</pre>
 
 And then use it directly:
 
+<pre>
   if PHONE_REGEXP =~ string
     # blah blah blah
   end
+</pre>
 
 The above match runs at full Ruby matching speed.  If you still
 wanted named capture groups, you can something like this:
 
+<pre>
   match_data = PHONE_REGEXP.match(string)
   area_code = match_data[PHONE_RE.name_map[:area]]
+</pre>
 
 h2. License and Copyright
 
