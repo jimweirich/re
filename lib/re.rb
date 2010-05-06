@@ -375,7 +375,7 @@ module Re
       Rexp.new(parenthesized_encoding(CONCAT) + "\\z", CONCAT, capture_keys)
     end
 
-    # New expression that matches self across an entire line.
+    # New regular expression that matches self across an entire line.
     def line
       self.bol.eol
     end
