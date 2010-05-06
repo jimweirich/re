@@ -192,14 +192,18 @@ module Re
       index ? @match_data[index] : nil
     end
 
+    # Return the names of the capture keys (in order)
     def keys
       name_map.keys.sort_by { |k| name_map[k] }
     end
     
+    # Return a list of captured values (in order)
     def values
       keys.map { |k| self[k] }
     end
 
+    # Iterate over the capture keys and captured values.  Yields the
+    # key/value pair on each iteration.
     def each
       keys.each do |k|
         yield([k, self[k]])
