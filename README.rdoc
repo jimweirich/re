@@ -1,19 +1,18 @@
+
 = Regular Expression Construction
 
-<i>Regular Expressions are hard!  Let's go shopping.</i>
-
-Complex regular expressions are hard to construct and even harder
-to read.  The Re library allows users to construct complex regular
+Complex regular expressions are hard to construct and even harder to
+read.  The Re library allows users to construct complex regular
 expressions from simpler expressions.  For example, consider the
 following regular expression that will parse dates:
 
-  /\A((?:19|20)[0-9]{2})[\- \/.](0[1-9]|1[012])[\- \/.](0[1-9]|[12][0-9]|3[01])\z/
+   /\A((?:19|20)[0-9]{2})[\- \/.](0[1-9]|1[012])[\- \/.](0[1-9]|[12][0-9]|3[01])\z/
 
 Using the Re library, that regular expression can be built
-incrementaly from smaller, easier to understand expressions.  Perhaps
-something like this:
+incrementaly from smaller, easier to understand expressions.
+Perhaps something like this:
 
-require 're'
+  require 're'
 
   include Re
 
@@ -34,18 +33,18 @@ Although it is more code, the individual pieces are smaller and
 easier to independently verify.  As an additional bonus, the capture
 groups can be retrieved by name:
 
- result = date.match("2009-01-23")
+  result = date.match("2009-01-23")
   result[:year]      # => "2009"
   result[:month]     # => "01"
   result[:day]       # => "23"
 
 == Version
 
-This document describes Re version 0.0.5.1.
+This document describes Re version 0.0.6.
 
 == Usage
 
- include Re
+  include Re
 
   number = re.any("0-9").all
   if number =~ string
@@ -56,7 +55,7 @@ This document describes Re version 0.0.5.1.
 
 == Examples
 
- re("a")                -- matches "a"
+  re("a")                -- matches "a"
   re("a") + re("b")      -- matches "ab"
   re("a") | re("b")      -- matches "a" or "b"
   re("a").many           -- matches "", "a", "aaaaaa"
@@ -69,13 +68,13 @@ See Re::Rexp for a complete list of expressions.
 Using re without an argument allows access to a number of common
 regular expression constants.  For example:
 
- re.space / re.spaces  -- matches " ", "\n" or "\t"
+  re.space / re.spaces  -- matches " ", "\n" or "\t"
   re.digit / re.digits  -- matches a digit / sequence of digits
 
 Also, re without arguments can also be used to construct character
 classes:
 
- re.any                -- Matches any charactor
+  re.any                -- Matches any charactor
   re.any("abc")         -- Matches "a", "b", or "c"
   re.any("0-9")         -- Matches the digits 0 through 9
   re.any("A-Z", "a-z", "0-9", "_")
@@ -96,7 +95,7 @@ regular expression once and reuse it as needed.  This means you
 won't do a lot of inline expressions using Re, but rather assign the
 generated Re regular expression to a constant.  For example:
 
- PHONE_RE = re.digit.repeat(3).capture(:area) +
+  PHONE_RE = re.digit.repeat(3).capture(:area) +
                re("-") + 
                re.digit.repeat(3).capture(:exchange) +
                re("-") +
@@ -105,7 +104,7 @@ generated Re regular expression to a constant.  For example:
 Alternatively, you can arrange for the regular expression to be
 constructed only when actually needed.  Something like:q
 
- def phone_re
+  def phone_re
     @phone_re ||= re.digit.repeat(3).capture(:area) +
                     re("-") + 
                     re.digit.repeat(3).capture(:exchange) +
@@ -136,14 +135,14 @@ like this:
 
 And then use it directly:
 
- if PHONE_REGEXP =~ string
+  if PHONE_REGEXP =~ string
     # blah blah blah
   end
 
 The above match runs at full Ruby matching speed.  If you still
 wanted named capture groups, you can something like this:
 
- match_data = PHONE_REGEXP.match(string)
+  match_data = PHONE_REGEXP.match(string)
   area_code = match_data[PHONE_RE.name_map[:area]]
 
 == License and Copyright
@@ -159,7 +158,6 @@ Documentation :: http://re-lib.rubyforge.org
 Source        :: http://github.com/jimweirich/re
 GemCutter     :: http://gemcutter.org/gems/re
 Download      :: http://rubyforge.org/frs/?group_id=9329
-Issue Tracker :: http://www.pivotaltracker.com/projects/47758
-Bug Reporting :: http://onestepback.org/cgi-bin/bugs.cgi?project=re
+Bug Tracker   :: http://www.pivotaltracker.com/projects/47758
 Author        :: jim.weirich@gmail.com
 
