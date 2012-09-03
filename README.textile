@@ -1,4 +1,3 @@
-
 h1. Regular Expression Construction
 
 Complex regular expressions are hard to construct and even harder to
@@ -230,9 +229,10 @@ Re is provided under the MIT open source license (see MIT-LICENSE)
 
 h2. Links:
 
-Documentation :: http://re-lib.rubyforge.org
-Source        :: http://github.com/jimweirich/re
-GemCutter     :: http://gemcutter.org/gems/re
-Download      :: http://rubyforge.org/frs/?group_id=9329
-Bug Tracker   :: http://www.pivotaltracker.com/projects/47758
-Author        :: jim.weirich@gmail.com
+Documentation          :: http://re-lib.rubyforge.org
+Source                 :: http://github.com/jimweirich/re
+GemCutter              :: http://gemcutter.org/gems/re
+Download               :: http://rubyforge.org/frs/?group_id=9329
+Bug Tracker            :: http://www.pivotaltracker.com/projects/47758
+Continuous Integration :: http://travis-ci.org/#!/jimweirich/re
+Author                 :: jim.weirich@gmail.com
