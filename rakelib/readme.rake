@@ -1,4 +1,4 @@
-require 'lib/re'
+require './lib/re'
 
 class RDocToTextile
   def initialize
@@ -8,20 +8,20 @@ class RDocToTextile
   def cleanup(line)
     line.sub(/^# ?/, '').sub(/ +$/, '')
   end
-  
+
   def emit(line="")
     @outstream.puts line
   end
-  
+
   def flush_blanks
     @blanks.times do emit("\n") end
     @blanks = 0
   end
-  
+
   def queue_blank_line
     @blanks += 1
   end
-  
+
   def output(line="")
     if line =~ /^ *$/
       queue_blank_line
@@ -30,7 +30,7 @@ class RDocToTextile
       emit(line)
     end
   end
-  
+
   def translate(line)
     inject_version if line =~ /^== Usage/
     if line =~ /^(=+) (.*)$/
@@ -38,14 +38,14 @@ class RDocToTextile
     end
     output(line)
   end
-  
+
   def inject_version
     emit "h2. Version"
     emit
     emit "This document describes Re version #{Re::VERSION}."
     emit
   end
-  
+
   def copy
     state = :copy
     @instream.each do |line|
@@ -79,7 +79,7 @@ class RDocToTextile
       end
     end
   end
-  
+
   def convert(task)
     open("lib/re.rb") do |fin|
       @instream = fin

@@ -11,13 +11,13 @@ require 're'
 class ReResultTeset < Test::Unit::TestCase
   include Re
   extend Re
-  
+
   PATTERN = re.any("a-z").one_or_more.capture(:alphas) + re.digits.capture(:digits)
-  
+
   def setup
     @result = PATTERN.match("<abc123>")
   end
-  
+
   def test_result_has_full_match
     assert_equal "abc123", @result.full_match
   end
@@ -54,7 +54,7 @@ class ReTest < Test::Unit::TestCase
     assert re("a") =~ "a"
     assert re("a") !~ "A"
   end
-  
+
   def test_not_match
     assert re("a") !~ "b"
   end
@@ -69,7 +69,7 @@ class ReTest < Test::Unit::TestCase
     assert r =~ "ab"
     assert r !~ "xb"
   end
-  
+
   def test_null
     r = re("a") + re.null + re("b")
     assert r =~ "ab"
@@ -81,7 +81,7 @@ class ReTest < Test::Unit::TestCase
     assert r =~ "b"
     assert r !~ "x"
   end
-  
+
   def test_many
     r =  re("x").many.all
     assert r !~ "z"
@@ -110,21 +110,21 @@ class ReTest < Test::Unit::TestCase
     assert r =~ "x"
     assert r =~ "xxx"
   end
-  
+
   def test_greedy_one_or_more
     r = re.any.one_or_more.capture(:any) + re("b")
     result = r.match("xbxb")
     assert result
     assert_equal "xbx", result[:any]
   end
-  
+
   def test_non_greedy_one_or_more
     r = re.any.non_greedy.one_or_more.capture(:any) + re("b")
     result = r.match("xbxb")
     assert result
     assert_equal "x", result[:any]
   end
-  
+
   def test_repeat_fixed_number
     r = re("a").repeat(3).all
     assert r =~ "aaa"
@@ -181,13 +181,13 @@ class ReTest < Test::Unit::TestCase
     assert r =~ "aaaa"
     assert r !~ "aaaaa"
   end
-  
+
   def test_at_most_greedy
     r = re("a").at_most(4)
     result = r =~ "aaaa"
     assert_equal "aaaa", result.full_match
   end
-  
+
   def test_at_most_non_greedy
     r = re("a").non_greedy.at_most(4)
     result = r =~ "aaaa"
@@ -199,7 +199,7 @@ class ReTest < Test::Unit::TestCase
       assert_equal "", result.full_match
     end
   end
-  
+
   def test_optional
     r = re("a").optional.all
     assert r =~ ""
@@ -217,7 +217,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "ab"
     assert r !~ "\n"
   end
-  
+
   def test_no_options
     r = re("a") + re.any + re("b")
     assert ! r.ignore_case?
@@ -232,24 +232,24 @@ class ReTest < Test::Unit::TestCase
     assert r.multiline?
     assert r =~ "\n"
   end
-  
+
   def test_ignore_case
     r = re("a").all.ignore_case
     assert r =~ "a"
     assert r =~ "A"
   end
-  
+
   def test_partial_ignore_case
     r = (re("a").ignore_case + re("b")).all
     assert r =~ "ab"
     assert r =~ "Ab"
     assert r !~ "aB"
   end
-  
+
   def test_options_no_not_modify_existing_rexps
     r = re("a")
     r2 = r.ignore_case
-    
+
     assert r !~ "A"
     assert r2 =~ "A"
   end
@@ -273,7 +273,7 @@ class ReTest < Test::Unit::TestCase
     assert r =~ "["
     assert r =~ "]"
   end
-  
+
   def test_any_with_a_range_of_chars
     r = re.any("a-z").many.all
     assert r =~ "abcdefghijklmnopqrstuvwxyz"
@@ -303,7 +303,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "["
     assert r !~ "]"
   end
-  
+
   def test_none_with_a_range_of_chars
     r = re.none("a-z").many.all
     assert r =~ "0123()$#"
@@ -327,7 +327,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "xa"
     assert r !~ "ax"
   end
-  
+
   def test_almost_all
     r = re("a").almost_all
     assert r =~ "a"
@@ -335,13 +335,13 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "xa"
     assert r !~ "ax"
   end
-  
+
   def test_all_across_lines
     r = re("a").many.all
     assert r =~ "a"
     assert r !~ "b\na"
   end
-  
+
   def test_line
     r = re("a").line
     assert r =~ "a"
@@ -349,7 +349,7 @@ class ReTest < Test::Unit::TestCase
     assert r =~ "b\na\n"
     assert r =~ "b\na\nx"
   end
-  
+
   def test_bol
     r = re("a").bol
     assert r =~ "a"
@@ -357,7 +357,7 @@ class ReTest < Test::Unit::TestCase
     assert r =~ "b\na"
     assert r !~ "b\nxa"
   end
-  
+
   def test_eol
     r = re("a").eol
     assert r =~ "a"
@@ -365,7 +365,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "b\nax"
     assert r !~ "b\nax\n"
   end
-  
+
   def test_begin
     r = re("a").begin
     assert r =~ "a"
@@ -374,7 +374,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "b\na"
     assert r !~ "b\nxa"
   end
-  
+
   def test_begin2
     r = re.begin + re("a")
     assert r =~ "a"
@@ -383,7 +383,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "b\na"
     assert r !~ "b\nxa"
   end
-  
+
   def test_end
     r = re("a").end
     assert r =~ "a"
@@ -393,7 +393,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "b\nax"
     assert r !~ "b\nax\n"
   end
-  
+
   def test_end2
     r = re("a") + re.end
     assert r =~ "a"
@@ -403,7 +403,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "b\nax"
     assert r !~ "b\nax\n"
   end
-  
+
   def test_very_end
     r = re("a").very_end
     assert r =~ "a"
@@ -413,7 +413,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "b\nax"
     assert r !~ "b\nax\n"
   end
-  
+
   def test_hex_digit
     r = re.hex_digit.all
     assert r =~ "1"
@@ -437,19 +437,19 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "x"
     assert r !~ "a"
   end
-  
+
   def test_digits
     r = re.digits.all
     assert r =~ "0123456789"
     assert r !~ "0123456789x"
   end
-  
+
   def test_break
     r = re.break + re("a") + re.break
     assert r =~ "there is a home"
     assert r !~ "there is an aardvark"
   end
-  
+
   def test_nonspace
     r = re.nonspace.all
     assert r =~ "a"
@@ -497,7 +497,7 @@ class ReTest < Test::Unit::TestCase
     assert r !~ "!"
     assert r !~ "?"
   end
-  
+
   def test_word
     r = re.word.all
     assert r =~ "a"
@@ -505,7 +505,7 @@ class ReTest < Test::Unit::TestCase
     assert re.word.all =~ "this_is_a_test"
     assert re.word.all !~ "asdf jkl"
   end
-  
+
   def test_single_capture
     r = re.any("a-z").one_or_more.capture(:word)
     result = (r =~ "012abc789")
@@ -525,18 +525,14 @@ class ReTest < Test::Unit::TestCase
     assert_equal "now   123", result[:everything]
     assert_equal "now   123", result.full_match
   end
-  
+
   def test_precedence_concatentaion_vs_alteration
     r = (re("a") | re("b") + re("c")).all
     assert r =~ "a"
     assert r =~ "bc"
     assert r !~ "ac"
   end
-  
-  def test_precendence_of_eol
-    r = re("a").bol.many
-  end
-  
+
   def test_example
     bracketed_delim = re("[") + re.none("]").one_or_more + re("]")
     delims = bracketed_delim.one_or_more.capture(:delims)
@@ -546,7 +542,7 @@ class ReTest < Test::Unit::TestCase
     assert result
     assert_equal "[a][b][xyz]", result[:delims]
   end
-  
+
   def test_date_parser
     assert date_re.match("1900/01/01")
     assert date_re.match("1956/01/01")
@@ -567,7 +563,7 @@ class ReTest < Test::Unit::TestCase
     assert ! date_re.match("2010/1/01")
     assert ! date_re.match("2010/01/1")
   end
-  
+
   def test_date_capture
     result = date_re.match("2010/02/14")
     assert result
@@ -575,7 +571,7 @@ class ReTest < Test::Unit::TestCase
     assert_equal "02", result[:month]
     assert_equal "14", result[:day]
   end
-  
+
   def test_name_map_returns_map_of_keywords
     r = re("a").capture(:a) + re("b").capture(:b) + re("c").capture(:c)
     result = r.match("abc")
@@ -590,7 +586,7 @@ class ReTest < Test::Unit::TestCase
   def date_re
     self.class.date_re
   end
-  
+
   class << self
     include Re
     def date_re
@@ -603,13 +599,13 @@ class ReTest < Test::Unit::TestCase
           ten_to_twelve_re        = re("1") + re.any("012")
           ten_and_under_thirty_re = re.any("12") + re.any("0-9")
           thirties_re             = re("3") + re.any("01")
-          
+
           year = century_prefix_re + re.digit.repeat(2)
           month = under_ten_re | ten_to_twelve_re
           day = under_ten_re | ten_and_under_thirty_re | thirties_re
-          
+
           (year.capture(:year) + delim_re + month.capture(:month) + delim_re + day.capture(:day)).all
         end
     end
-  end  
+  end
 end

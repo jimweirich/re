@@ -2,9 +2,9 @@
 
 require 'rake/clean'
 require 'rake/testtask'
-require 'rake/rdoctask'
+require 'rdoc/task'
 
-require 'lib/re'
+require './lib/re'
 
 task :default => :test
 
@@ -23,18 +23,18 @@ namespace "release" do
     "publish:rdoc",
     "publish:gem",
   ]
-  
+
   task :check_all_committed do
     status = `git status`
     unless status =~ /nothing to commit/
       fail "Outstanding Git Changes:\n#{status}"
     end
   end
-  
+
   task :commit_new_version do
     sh "git commit -m 'bumped to version #{Re::VERSION}'"
   end
-  
+
   task :not_already_tagged do
     if `git tag -l re-#{Re::VERSION}` != ""
       fail "Already tagged with re-#{Re::VERSION}"
@@ -45,7 +45,7 @@ namespace "release" do
     sh "git tag re-#{Re::VERSION}"
     sh "git push --tags"
   end
-  
+
   task :check_non_beta do
     fail "Must not be a beta version! Version is #{Re::VERSION}" if Re::Version::BETA
   end

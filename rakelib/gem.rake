@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'lib/re'
+require './lib/re'
 
 PKG_FILES = FileList[
   '[A-Z]*',
@@ -11,7 +11,7 @@ PKG_FILES = FileList[
 if ! defined?(Gem)
   puts "Package Target requires RubyGEMs"
 else
-  require 'rake/gempackagetask'
+  require 'rubygems/package_task'
   SPEC = Gem::Specification.new do |s|
     s.name = 're'
     s.version = Re::VERSION
@@ -33,7 +33,7 @@ else
     s.rubyforge_project = "re-lib"
   end
 
-  package_task = Rake::GemPackageTask.new(SPEC) do |pkg|
+  package_task = Gem::PackageTask.new(SPEC) do |pkg|
     pkg.need_zip = true
     pkg.need_tar = true
   end
